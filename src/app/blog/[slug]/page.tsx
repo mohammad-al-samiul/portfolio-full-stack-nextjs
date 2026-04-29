@@ -161,7 +161,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
         <footer className="mt-24 pt-12 border-t border-border/50">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-8">
             <div className="flex flex-wrap gap-2">
-              {post.tags.map((tag) => (
+              {post.tags.map((tag: string) => (
                 <span
                   key={tag}
                   className="px-4 py-1.5 rounded-full bg-muted border border-border text-xs font-medium text-muted-foreground"

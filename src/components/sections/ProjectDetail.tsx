@@ -4,8 +4,7 @@ import { useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion, useInView } from "framer-motion";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
+import { MarkdownRenderer } from "@/components/ui/MarkdownRenderer";
 import { Project } from "@/data/projects";
 import {
   ExternalLink,
@@ -81,8 +80,13 @@ export function ProjectDetail({ project }: ProjectDetailProps) {
             href="/#projects"
             className="group inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/5 border border-white/10 text-muted-foreground hover:text-foreground hover:border-primary/50 transition-all duration-300 backdrop-blur-md"
           >
-            <ArrowLeft size={18} className="group-hover:-translate-x-1 transition-transform" />
-            <span className="text-sm font-bold uppercase tracking-widest">Back to Projects</span>
+            <ArrowLeft
+              size={18}
+              className="group-hover:-translate-x-1 transition-transform"
+            />
+            <span className="text-sm font-bold uppercase tracking-widest">
+              Back to Projects
+            </span>
           </Link>
         </motion.div>
 
@@ -95,11 +99,11 @@ export function ProjectDetail({ project }: ProjectDetailProps) {
                 {project.category}
               </span>
             </div>
-            
+
             <h1 className="text-4xl md:text-7xl font-bold tracking-tight text-foreground mb-6 leading-tight">
               {project.title}
             </h1>
-            
+
             <p className="text-xl text-muted-foreground leading-relaxed mb-8">
               {project.shortDescription}
             </p>
@@ -134,8 +138,8 @@ export function ProjectDetail({ project }: ProjectDetailProps) {
             </div>
           </motion.div>
 
-          <motion.div 
-            variants={itemVariants} 
+          <motion.div
+            variants={itemVariants}
             className="lg:col-span-5 relative"
           >
             <div className="aspect-square rounded-3xl overflow-hidden border border-white/10 shadow-2xl relative group">
@@ -148,7 +152,7 @@ export function ProjectDetail({ project }: ProjectDetailProps) {
               />
               <div className="absolute inset-0 bg-linear-to-t from-black/60 via-transparent to-transparent opacity-40" />
             </div>
-            
+
             {/* Floating decoration */}
             <div className="absolute -bottom-6 -left-6 p-6 rounded-2xl bg-background/80 backdrop-blur-xl border border-white/10 shadow-xl hidden md:block">
               <div className="flex items-center gap-4">
@@ -156,7 +160,9 @@ export function ProjectDetail({ project }: ProjectDetailProps) {
                   <Calendar size={24} />
                 </div>
                 <div>
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Status</p>
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                    Status
+                  </p>
                   <p className="text-sm font-bold">Production Ready</p>
                 </div>
               </div>
@@ -168,17 +174,18 @@ export function ProjectDetail({ project }: ProjectDetailProps) {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 md:gap-16">
           <div className="lg:col-span-2 space-y-16">
             <motion.section variants={itemVariants}>
-              <div className="prose prose-lg dark:prose-invert max-w-none whitespace-pre-wrap prose-headings:text-foreground prose-a:text-primary hover:prose-a:text-primary/80 prose-strong:text-foreground prose-code:text-primary prose-code:bg-primary/10 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded-md prose-pre:bg-muted/50 prose-pre:border prose-pre:border-border">
-                <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                  {project.fullDescription || "No content provided."}
-                </ReactMarkdown>
-              </div>
+              <MarkdownRenderer
+                content={project.fullDescription || "No content provided."}
+              />
             </motion.section>
           </div>
 
           <aside className="space-y-10">
             {/* Tech Stack Sidebar */}
-            <motion.div variants={itemVariants} className="p-8 rounded-3xl bg-white/5 border border-white/10 backdrop-blur-md sticky top-24">
+            <motion.div
+              variants={itemVariants}
+              className="p-8 rounded-3xl bg-white/5 border border-white/10 backdrop-blur-md sticky top-24"
+            >
               <h3 className="text-xl font-bold mb-6 flex items-center gap-2">
                 <Code2 size={20} className="text-primary" />
                 Technology
@@ -195,10 +202,20 @@ export function ProjectDetail({ project }: ProjectDetailProps) {
               </div>
 
               <div className="mt-10 pt-10 border-t border-white/10">
-                <h4 className="text-sm font-bold uppercase tracking-widest text-muted-foreground mb-4">Key Features</h4>
+                <h4 className="text-sm font-bold uppercase tracking-widest text-muted-foreground mb-4">
+                  Key Features
+                </h4>
                 <ul className="space-y-3">
-                  {["Responsive Design", "API Integration", "Secure Auth", "Performance Optimized"].map((feature) => (
-                    <li key={feature} className="flex items-center gap-2 text-sm text-muted-foreground">
+                  {[
+                    "Responsive Design",
+                    "API Integration",
+                    "Secure Auth",
+                    "Performance Optimized",
+                  ].map((feature) => (
+                    <li
+                      key={feature}
+                      className="flex items-center gap-2 text-sm text-muted-foreground"
+                    >
                       <CheckCircle2 size={16} className="text-primary" />
                       {feature}
                     </li>
@@ -216,10 +233,12 @@ export function ProjectDetail({ project }: ProjectDetailProps) {
         >
           <div className="relative z-10">
             <h3 className="text-3xl md:text-5xl font-bold text-foreground mb-6">
-              Let&apos;s build something <br className="hidden md:block" /> amazing together.
+              Let&apos;s build something <br className="hidden md:block" />{" "}
+              amazing together.
             </h3>
             <p className="text-muted-foreground mb-10 max-w-xl mx-auto text-lg">
-              Inspired by this project? I&apos;m currently available for new opportunities and collaborations.
+              Inspired by this project? I&apos;m currently available for new
+              opportunities and collaborations.
             </p>
             <Link href="/#contact">
               <motion.button
@@ -231,7 +250,7 @@ export function ProjectDetail({ project }: ProjectDetailProps) {
               </motion.button>
             </Link>
           </div>
-          
+
           {/* Animated background element */}
           <div className="absolute -bottom-20 -right-20 w-64 h-64 bg-primary/20 rounded-full blur-[80px] group-hover:scale-150 transition-transform duration-1000" />
         </motion.div>

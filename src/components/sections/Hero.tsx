@@ -26,7 +26,7 @@ export function Hero() {
           <div className="relative w-32 h-32 md:w-40 md:h-40 rounded-full border-4 border-primary/20 p-1 overflow-hidden backdrop-blur-sm bg-background">
             <div className="w-full h-full rounded-full bg-muted flex items-center justify-center overflow-hidden relative">
               <Image
-                src="https://res.cloudinary.com/dt9bjjzrd/image/upload/v1777554981/new-image_ypyod3.jpg"
+                src="https://res.cloudinary.com/dt9bjjzrd/image/upload/v1777565997/samiul_bvwuq9.jpg"
                 alt="Mohammad Al Samiul"
                 fill
                 className="object-cover"

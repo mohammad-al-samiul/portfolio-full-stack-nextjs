@@ -12,6 +12,8 @@ import {
   Sparkles,
   BrainCircuit,
   GitMerge,
+  Shield,
+  Code,
 } from "lucide-react";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -69,25 +71,27 @@ const passionCards: PassionCard[] = [
     description: "Architecting systems that scale gracefully under real load.",
   },
   {
-    icon: <Sparkles className="w-5 h-5" />,
-    title: "UI / UX",
-    description: "Crafting interfaces that feel as good as they look.",
+    icon: <Layers className="w-5 h-5" />,
+    title: "Full-Stack Development",
+    description: "Building complete web applications from frontend to backend.",
   },
   {
-    icon: <Cloud className="w-5 h-5" />,
-    title: "Cloud & Scale",
-    description: "Distributed systems, serverless, and modern infrastructure.",
+    icon: <Shield className="w-5 h-5" />,
+    title: "Cybersecurity",
+    description:
+      "Exploring security practices, vulnerabilities, and safe system design.",
+  },
+  {
+    icon: <Code className="w-5 h-5" />,
+    title: "Problem Solving",
+    description:
+      "Writing clean, efficient code and solving real-world challenges.",
   },
   {
     icon: <Users className="w-5 h-5" />,
     title: "Mentoring",
     description:
       "Helping junior devs level up — debugging, architecture, mindset.",
-  },
-  {
-    icon: <BrainCircuit className="w-5 h-5" />,
-    title: "DSA",
-    description: "Because elegant algorithms are a form of art.",
   },
   {
     icon: <GitMerge className="w-5 h-5" />,
@@ -97,11 +101,11 @@ const passionCards: PassionCard[] = [
 ];
 
 const TYPED_WORDS = [
-  "Full-Stack Developer",
-  "System Designer",
-  "Performance Nerd",
-  "UI/UX Enthusiast",
-  "Open Source Advocate",
+  " Full-Stack Engineer",
+  " System Designer",
+  " Cybersecurity Enthusiast",
+  " Open Source Contributor",
+  " Automation Enthusiast",
 ];
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
@@ -141,13 +145,7 @@ function TypedText() {
   );
 }
 
-function TimelineNode({
-  item,
-  index,
-}: {
-  item: TimelineItem;
-  index: number;
-}) {
+function TimelineNode({ item, index }: { item: TimelineItem; index: number }) {
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, margin: "-60px" });
   const isEven = index % 2 === 0;
@@ -240,7 +238,7 @@ export function About() {
       className="relative py-24 md:py-32 bg-muted/30 border-b overflow-hidden"
     >
       {/* Subtle background glow */}
-      <div className="pointer-events-none absolute -top-32 left-1/2 -translate-x-1/2 w-[600px] h-[400px] rounded-full bg-primary/8 blur-[120px]" />
+      <div className="pointer-events-none absolute -top-32 left-1/2 -translate-x-1/2 w-150 h-100 rounded-full bg-primary/8 blur-[120px]" />
 
       <div className="container mx-auto px-4 md:px-6 relative z-10">
         {/* ── Section heading ── */}
@@ -259,7 +257,7 @@ export function About() {
             About Me
           </h2>
           <p className="text-lg text-muted-foreground">
-            A <TypedText />
+            <TypedText />
           </p>
         </motion.div>
 
@@ -273,11 +271,11 @@ export function About() {
         >
           <blockquote className="relative text-xl md:text-2xl font-medium text-foreground/80 italic leading-relaxed border-l-0">
             <span className="text-5xl text-primary/30 font-serif leading-none select-none absolute -top-3 -left-2">
-              "
+              &quot;
             </span>
             Can I solve real-life problems using code?
             <span className="text-5xl text-primary/30 font-serif leading-none select-none absolute -bottom-6 -right-2">
-              "
+              &quot;
             </span>
           </blockquote>
           <p className="mt-8 text-sm text-muted-foreground leading-relaxed">
@@ -323,7 +321,9 @@ export function About() {
               mentor junior developers
             </span>{" "}
             and participate in{" "}
-            <span className="text-foreground font-medium">tech communities</span>
+            <span className="text-foreground font-medium">
+              tech communities
+            </span>
             , because the best growth happens when knowledge moves in both
             directions.
           </p>

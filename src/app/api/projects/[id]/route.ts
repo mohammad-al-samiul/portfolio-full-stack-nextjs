@@ -38,10 +38,10 @@ export async function PATCH(
     return NextResponse.json(project);
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return new NextResponse(JSON.stringify(error.issues), { status: 422 });
+      return new NextResponse(JSON.stringify({ message: "Validation Error", errors: error.issues }), { status: 422 });
     }
 
-    return new NextResponse(null, { status: 500 });
+    return new NextResponse(JSON.stringify({ message: "Internal Server Error" }), { status: 500 });
   }
 }
 

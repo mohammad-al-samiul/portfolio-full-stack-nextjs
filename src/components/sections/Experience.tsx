@@ -20,11 +20,24 @@ type Experience = {
 
 const experiences: Experience[] = [
   {
+    id: "galaxy",
+    company: "Galaxy Laboratories",
+    role: "Full-Stack Engineer",
+    duration: "May 2026 – Present",
+    isLatest: true,
+    highlights: [
+      "Built full-stack applications using modern web technologies",
+      "Developed automation workflows using LangChain, LangGraph, and n8n",
+      "Integrated AI-driven pipelines for task automation and data processing",
+      "Worked on scalable system design and backend architecture",
+    ],
+  },
+  {
     id: "divergent",
     company: "Divergent Technologies Ltd.",
     role: "Junior Software Engineer (Full Stack)",
     duration: "Oct 2025 – Mar 2026",
-    isLatest: true,
+    isLatest: false,
     highlights: [
       "Built dashboards using Next.js + TanStack",
       "Developed inventory system (NestJS + PostgreSQL)",
@@ -45,7 +58,6 @@ const experiences: Experience[] = [
 
 function TimelineCard({
   experience,
-  index,
 }: {
   experience: Experience;
   index: number;
@@ -96,7 +108,7 @@ function TimelineCard({
         className={cn(
           "flex-1 relative group",
           "rounded-2xl p-6 md:p-8",
-          "bg-gradient-to-br from-card/80 via-card to-card/60",
+          "bg-linear-to-br from-card/80 via-card to-card/60",
           "border border-primary/30 backdrop-blur-xl",
           "shadow-xl shadow-primary/5 hover:shadow-2xl hover:shadow-primary/15",
           "transition-all duration-500",

@@ -7,12 +7,30 @@ export const authConfig = {
   callbacks: {
     authorized({ auth, request: { nextUrl } }) {
       const isLoggedIn = !!auth?.user;
-      const isAdmin = nextUrl.pathname.startsWith("/admin") && nextUrl.pathname !== "/admin/login";
-      
-      if (isAdmin) {
-        if (isLoggedIn) return true;
-        return false; // Redirect unauthenticated users to login page
+      const isLoginRoute = nextUrl.pathname === "/admin/login";
+      const isAdminRoute = nextUrl.pathname.startsWith("/admin");
+      const isApiRoute = nextUrl.pathname.startsWith("/api");
+
+      // Always allow API routes to pass through
+      // This prevents HTML redirects on API requests
+      if (isApiRoute) {
+        return true;
       }
+
+      if (isLoginRoute) {
+        if (isLoggedIn) {
+          return Response.redirect(new URL("/admin/dashboard", nextUrl));
+        }
+        return true;
+      }
+
+      if (isAdminRoute) {
+        if (!isLoggedIn) {
+          return false; // Redirects to pages.signIn
+        }
+        return true;
+      }
+
       return true;
     },
     async session({ session, token }) {

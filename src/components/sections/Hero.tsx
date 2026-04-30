@@ -6,7 +6,6 @@ import { Download, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { SocialLinks } from "@/components/ui/social-links";
 
-
 export function Hero() {
   return (
     <section
@@ -27,11 +26,11 @@ export function Hero() {
           <div className="relative w-32 h-32 md:w-40 md:h-40 rounded-full border-4 border-primary/20 p-1 overflow-hidden backdrop-blur-sm bg-background">
             <div className="w-full h-full rounded-full bg-muted flex items-center justify-center overflow-hidden relative">
               <Image
-                src="https://api.dicebear.com/7.x/avataaars/svg?seed=Samiul&backgroundColor=b6e3f4"
+                src="https://res.cloudinary.com/dt9bjjzrd/image/upload/v1777554981/new-image_ypyod3.jpg"
                 alt="Mohammad Al Samiul"
                 fill
                 className="object-cover"
-                unoptimized
+                priority
               />
             </div>
           </div>

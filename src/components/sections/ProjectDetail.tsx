@@ -4,6 +4,8 @@ import { useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion, useInView } from "framer-motion";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import { Project } from "@/data/projects";
 import {
   ExternalLink,
@@ -165,58 +167,11 @@ export function ProjectDetail({ project }: ProjectDetailProps) {
         {/* Content Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 md:gap-16">
           <div className="lg:col-span-2 space-y-16">
-            {/* Description */}
             <motion.section variants={itemVariants}>
-              <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-6 flex items-center gap-3">
-                <span className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary text-sm font-bold">01</span>
-                Overview
-              </h2>
-              <div className="prose prose-invert max-w-none">
-                <p className="text-lg text-muted-foreground leading-relaxed whitespace-pre-wrap">
-                  {project.fullDescription}
-                </p>
-              </div>
-            </motion.section>
-
-            {/* Challenges */}
-            <motion.section variants={itemVariants}>
-              <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-8 flex items-center gap-3">
-                <span className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary text-sm font-bold">02</span>
-                Challenges & Solutions
-              </h2>
-              <div className="grid grid-cols-1 gap-4">
-                {project.challenges.map((challenge, index) => (
-                  <div
-                    key={index}
-                    className="group flex gap-4 p-6 rounded-2xl bg-white/5 border border-white/10 hover:border-primary/30 transition-all duration-300"
-                  >
-                    <div className="mt-1">
-                      <Zap size={20} className="text-primary" />
-                    </div>
-                    <p className="text-muted-foreground leading-relaxed group-hover:text-foreground transition-colors">{challenge}</p>
-                  </div>
-                ))}
-              </div>
-            </motion.section>
-
-            {/* Future Improvements */}
-            <motion.section variants={itemVariants}>
-              <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-8 flex items-center gap-3">
-                <span className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary text-sm font-bold">03</span>
-                Roadmap
-              </h2>
-              <div className="grid grid-cols-1 gap-4">
-                {project.futureImprovements.map((improvement, index) => (
-                  <div
-                    key={index}
-                    className="flex gap-4 p-6 rounded-2xl bg-primary/5 border border-primary/10"
-                  >
-                    <div className="mt-1">
-                      <Lightbulb size={20} className="text-primary" />
-                    </div>
-                    <p className="text-muted-foreground leading-relaxed">{improvement}</p>
-                  </div>
-                ))}
+              <div className="prose prose-lg dark:prose-invert max-w-none whitespace-pre-wrap prose-headings:text-foreground prose-a:text-primary hover:prose-a:text-primary/80 prose-strong:text-foreground prose-code:text-primary prose-code:bg-primary/10 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded-md prose-pre:bg-muted/50 prose-pre:border prose-pre:border-border">
+                <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                  {project.fullDescription || "No content provided."}
+                </ReactMarkdown>
               </div>
             </motion.section>
           </div>

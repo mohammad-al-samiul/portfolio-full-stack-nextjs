@@ -32,6 +32,16 @@ export default async function Home() {
     console.error("Home page: Failed to fetch blog posts", error);
   }
 
+  // Fetch projects
+  let projects: any[] = [];
+  try {
+    projects = await prisma.project.findMany({
+      orderBy: { createdAt: "desc" },
+    });
+  } catch (error) {
+    console.error("Home page: Failed to fetch projects", error);
+  }
+
   return (
     <div className="flex flex-col w-full">
       <Hero />
@@ -42,7 +52,7 @@ export default async function Home() {
 
       <Experience />
 
-      <Projects />
+      <Projects initialProjects={projects} />
 
       {/* Shared Data Source: Fetching directly from Prisma */}
       <LatestBlog posts={posts} />

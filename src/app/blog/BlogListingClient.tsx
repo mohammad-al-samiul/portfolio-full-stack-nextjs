@@ -51,7 +51,7 @@ function BlogTab({
   );
 }
 
-export function BlogListingClient({ initialPosts }: { initialPosts: any[] }) {
+export function BlogListingClient({ initialPosts }: { initialPosts: Post[] }) {
   const [activeCategory, setActiveCategory] = useState<Category>("All");
 
   const filteredPosts = useMemo(() => {

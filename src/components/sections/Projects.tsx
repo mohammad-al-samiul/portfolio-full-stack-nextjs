@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, useMemo } from "react";
+import { useRef, useState, useMemo, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion, useInView, AnimatePresence } from "framer-motion";
@@ -11,7 +11,6 @@ import {
   GitBranch,
   Sparkles,
   ArrowRight,
-  Code2,
   Layers,
 } from "lucide-react";
 
@@ -73,13 +72,7 @@ function ProjectTab({
 
 // ─── ProjectCard ──────────────────────────────────────────────────────────────
 
-function ProjectCard({
-  project,
-  index,
-}: {
-  project: Project;
-  index: number;
-}) {
+function ProjectCard({ project, index }: { project: Project; index: number }) {
   const ref = useRef<HTMLDivElement>(null);
   const inView = useInView(ref, { once: true, margin: "-100px" });
 
@@ -90,7 +83,7 @@ function ProjectCard({
       // Animation: Enter from LEFT (-30px), fade in, scale slightly
       initial={{ opacity: 0, x: -30, scale: 0.95 }}
       animate={inView ? { opacity: 1, x: 0, scale: 1 } : {}}
-      exit={{ opacity: 0, scale: 0.9, transition: { duration: 0.2 } }}
+      exit={{ opacity: 0, x: 30, scale: 0.9, transition: { duration: 0.2 } }}
       transition={{
         duration: 0.4,
         ease: [0.22, 1, 0.36, 1] as any,
@@ -175,7 +168,10 @@ function ProjectCard({
                   href={project.liveLink}
                   target="_blank"
                   rel="noopener noreferrer"
-                  whileHover={{ scale: 1.1, backgroundColor: "rgba(var(--primary), 0.2)" }}
+                  whileHover={{
+                    scale: 1.1,
+                    backgroundColor: "rgba(var(--primary), 0.2)",
+                  }}
                   whileTap={{ scale: 0.95 }}
                   className="p-2 rounded-lg bg-muted/30 text-muted-foreground hover:text-primary transition-colors duration-300"
                   title="View Live"
@@ -188,7 +184,10 @@ function ProjectCard({
                   href={project.githubLink}
                   target="_blank"
                   rel="noopener noreferrer"
-                  whileHover={{ scale: 1.1, backgroundColor: "rgba(var(--primary), 0.2)" }}
+                  whileHover={{
+                    scale: 1.1,
+                    backgroundColor: "rgba(var(--primary), 0.2)",
+                  }}
                   whileTap={{ scale: 0.95 }}
                   className="p-2 rounded-lg bg-muted/30 text-muted-foreground hover:text-primary transition-colors duration-300"
                   title="View GitHub"
@@ -214,11 +213,9 @@ function ProjectCard({
         {/* Premium Hover Effects */}
         {/* Gradient glow */}
         <div className="absolute inset-0 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-radial-gradient from-primary/10 via-transparent to-transparent" />
-        
+
         {/* Animated border glow */}
-        <motion.div
-          className="absolute inset-0 rounded-2xl border-2 border-primary/0 group-hover:border-primary/20 transition-colors duration-500 pointer-events-none"
-        />
+        <motion.div className="absolute inset-0 rounded-2xl border-2 border-primary/0 group-hover:border-primary/20 transition-colors duration-500 pointer-events-none" />
       </div>
     </motion.div>
   );
@@ -229,15 +226,37 @@ function ProjectCard({
 const categories = ["All", "Frontend", "Backend", "Fullstack"] as const;
 type Category = (typeof categories)[number];
 
-export function Projects() {
+export function Projects({ initialProjects = [] }: { initialProjects?: any[] }) {
   const [activeCategory, setActiveCategory] = useState<Category>("All");
+  
   const headingRef = useRef<HTMLDivElement>(null);
   const headingInView = useInView(headingRef, { once: true, margin: "-60px" });
 
+  const fetchedProjects = useMemo(() => {
+    return initialProjects.map((p: any) => ({
+      id: p.id,
+      slug: p.slug,
+      title: p.title,
+      shortDescription: p.description || "",
+      fullDescription: p.content || "",
+      image: p.coverImage || "https://images.unsplash.com/photo-1557821552-17105176677c?w=500&h=300&fit=crop",
+      techStack: p.techStack || [],
+      liveLink: p.liveUrl,
+      githubLink: p.githubUrl,
+      challenges: [],
+      futureImprovements: [],
+      featured: p.featured,
+      category: "Fullstack", // Fallback as DB does not have category
+    }));
+  }, [initialProjects]);
+
   const filteredProjects = useMemo(() => {
-    if (activeCategory === "All") return projects;
-    return projects.filter((p) => p.category === activeCategory);
-  }, [activeCategory]);
+    // Use fetched projects, but if empty, can fallback to static projects
+    const dataToFilter = fetchedProjects.length > 0 ? fetchedProjects : projects;
+    
+    if (activeCategory === "All") return dataToFilter;
+    return dataToFilter.filter((p) => p.category === activeCategory);
+  }, [activeCategory, fetchedProjects]);
 
   return (
     <section
@@ -265,7 +284,12 @@ export function Projects() {
             scale: [1.2, 1, 1.2],
             opacity: [0.1, 0.15, 0.1],
           }}
-          transition={{ duration: 20, repeat: Infinity, ease: "easeInOut", delay: 2 }}
+          transition={{
+            duration: 20,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: 2,
+          }}
           className="absolute -bottom-40 -left-40 w-[600px] h-[600px] bg-primary/5 rounded-full blur-[120px]"
         />
       </div>
@@ -293,14 +317,15 @@ export function Projects() {
           >
             Featured Projects
           </motion.h2>
-          
+
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={headingInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.6, delay: 0.2 }}
             className="text-muted-foreground text-lg md:text-xl max-w-2xl mx-auto"
           >
-            A collection of projects where design meets high-performance engineering.
+            A collection of projects where design meets high-performance
+            engineering.
           </motion.p>
         </div>
 
@@ -343,9 +368,12 @@ export function Projects() {
         >
           <div className="inline-block p-1 rounded-3xl bg-linear-to-r from-primary/10 via-primary/5 to-transparent">
             <div className="px-10 py-12 rounded-2xl bg-card border border-border shadow-sm">
-              <h3 className="text-2xl md:text-3xl font-bold mb-4">Want to see more?</h3>
+              <h3 className="text-2xl md:text-3xl font-bold mb-4">
+                Want to see more?
+              </h3>
               <p className="text-muted-foreground mb-8 max-w-md mx-auto text-sm md:text-base">
-                Check out my GitHub for more experiments and open-source contributions.
+                Check out my GitHub for more experiments and open-source
+                contributions.
               </p>
               <a
                 href="https://github.com/yourusername"

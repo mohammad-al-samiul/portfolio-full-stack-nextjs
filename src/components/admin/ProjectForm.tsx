@@ -28,12 +28,22 @@ export function ProjectForm({ initialData }: ProjectFormProps) {
   const [formData, setFormData] = useState({
     title: initialData?.title || "",
     description: initialData?.description || "",
-    image: initialData?.image || "",
-    liveLink: initialData?.liveLink || "",
-    githubLink: initialData?.githubLink || "",
+    coverImage: initialData?.coverImage || initialData?.image || "",
+    liveUrl: initialData?.liveUrl || initialData?.liveLink || "",
+    githubUrl: initialData?.githubUrl || initialData?.githubLink || "",
     techStack: initialData?.techStack || [],
     featured: initialData?.featured || false,
+    slug: initialData?.slug || "",
+    content: initialData?.content || "",
+    published: initialData?.published ?? true,
   });
+
+  const generateSlug = (text: string) => {
+    return text
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/(^-|-$)+/g, '');
+  };
 
   const [newTag, setNewTag] = useState("");
 
@@ -119,20 +129,51 @@ export function ProjectForm({ initialData }: ProjectFormProps) {
               <input
                 type="text"
                 value={formData.title}
-                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                onChange={(e) => {
+                  const newTitle = e.target.value;
+                  setFormData((prev) => ({
+                    ...prev,
+                    title: newTitle,
+                    slug: initialData ? prev.slug : generateSlug(newTitle),
+                  }));
+                }}
                 className="w-full px-6 py-4 rounded-2xl bg-muted/30 border border-border focus:border-primary/50 outline-none transition-all text-lg font-semibold"
                 placeholder="E.g. AI Portfolio Dashboard"
               />
             </div>
 
             <div className="space-y-2">
+              <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-1">Slug</label>
+              <input
+                type="text"
+                value={formData.slug}
+                onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
+                className="w-full px-6 py-4 rounded-2xl bg-muted/30 border border-border focus:border-primary/50 outline-none transition-all text-sm"
+                placeholder="e.g. ai-portfolio-dashboard"
+              />
+            </div>
+
+            <div className="space-y-2">
               <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-1">Description</label>
               <textarea
-                rows={5}
+                rows={3}
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                 className="w-full px-6 py-4 rounded-2xl bg-muted/30 border border-border focus:border-primary/50 outline-none transition-all resize-none"
-                placeholder="Write a detailed description of the project..."
+                placeholder="Write a short description of the project..."
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-1 flex items-center justify-between">
+                <span>Content (Markdown Supported)</span>
+              </label>
+              <textarea
+                rows={8}
+                value={formData.content}
+                onChange={(e) => setFormData({ ...formData, content: e.target.value })}
+                className="w-full px-6 py-4 rounded-2xl bg-muted/30 border border-border focus:border-primary/50 outline-none transition-all resize-y font-mono text-sm"
+                placeholder="Write the full project content in markdown..."
               />
             </div>
           </div>
@@ -145,8 +186,8 @@ export function ProjectForm({ initialData }: ProjectFormProps) {
               </label>
               <input
                 type="text"
-                value={formData.liveLink}
-                onChange={(e) => setFormData({ ...formData, liveLink: e.target.value })}
+                value={formData.liveUrl}
+                onChange={(e) => setFormData({ ...formData, liveUrl: e.target.value })}
                 className="w-full px-6 py-4 rounded-2xl bg-muted/30 border border-border focus:border-primary/50 outline-none transition-all"
                 placeholder="https://example.com"
               />
@@ -157,8 +198,8 @@ export function ProjectForm({ initialData }: ProjectFormProps) {
               </label>
               <input
                 type="text"
-                value={formData.githubLink}
-                onChange={(e) => setFormData({ ...formData, githubLink: e.target.value })}
+                value={formData.githubUrl}
+                onChange={(e) => setFormData({ ...formData, githubUrl: e.target.value })}
                 className="w-full px-6 py-4 rounded-2xl bg-muted/30 border border-border focus:border-primary/50 outline-none transition-all"
                 placeholder="https://github.com/user/repo"
               />
@@ -176,15 +217,15 @@ export function ProjectForm({ initialData }: ProjectFormProps) {
               </label>
               <input
                 type="text"
-                value={formData.image}
-                onChange={(e) => setFormData({ ...formData, image: e.target.value })}
+                value={formData.coverImage}
+                onChange={(e) => setFormData({ ...formData, coverImage: e.target.value })}
                 className="w-full px-4 py-3 rounded-xl bg-muted/30 border border-border focus:border-primary/50 outline-none transition-all text-xs"
                 placeholder="https://..."
               />
             </div>
-            {formData.image && (
+            {formData.coverImage && (
               <div className="relative aspect-video rounded-2xl overflow-hidden border border-border shadow-inner">
-                <img src={formData.image} alt="Preview" className="object-cover w-full h-full" />
+                <img src={formData.coverImage} alt="Preview" className="object-cover w-full h-full" />
               </div>
             )}
           </div>
@@ -222,21 +263,37 @@ export function ProjectForm({ initialData }: ProjectFormProps) {
           </div>
 
           {/* Status */}
-          <div className="glass p-8 rounded-3xl border border-white/5">
-            <label className="flex items-center gap-3 cursor-pointer group">
+          <div className="glass p-8 rounded-3xl border border-white/5 space-y-6">
+            <label className="flex items-center justify-between cursor-pointer group">
+              <span className="text-sm font-bold uppercase tracking-widest text-muted-foreground group-hover:text-foreground transition-colors">Featured Project</span>
               <div 
                 onClick={() => setFormData({ ...formData, featured: !formData.featured })}
                 className={cn(
-                  "w-12 h-6 rounded-full transition-all relative",
-                  formData.featured ? "bg-primary" : "bg-muted"
+                  "w-12 h-6 rounded-full transition-colors duration-300 ease-in-out relative",
+                  formData.featured ? "bg-blue-600 dark:bg-blue-500" : "bg-muted"
                 )}
               >
                 <div className={cn(
-                  "absolute top-1 w-4 h-4 rounded-full bg-white transition-all shadow-sm",
-                  formData.featured ? "left-7" : "left-1"
+                  "absolute top-1 w-4 h-4 rounded-full bg-white transition-all duration-300 ease-in-out shadow-sm",
+                  formData.featured ? "left-7 shadow-blue-900/50" : "left-1"
                 )} />
               </div>
-              <span className="text-sm font-bold uppercase tracking-widest text-muted-foreground group-hover:text-foreground transition-colors">Featured Project</span>
+            </label>
+
+            <label className="flex items-center justify-between cursor-pointer group">
+              <span className="text-sm font-bold uppercase tracking-widest text-muted-foreground group-hover:text-foreground transition-colors">Published</span>
+              <div 
+                onClick={() => setFormData({ ...formData, published: !formData.published })}
+                className={cn(
+                  "w-12 h-6 rounded-full transition-colors duration-300 ease-in-out relative",
+                  formData.published ? "bg-blue-600 dark:bg-blue-500" : "bg-muted"
+                )}
+              >
+                <div className={cn(
+                  "absolute top-1 w-4 h-4 rounded-full bg-white transition-all duration-300 ease-in-out shadow-sm",
+                  formData.published ? "left-7 shadow-blue-900/50" : "left-1"
+                )} />
+              </div>
             </label>
           </div>
         </div>

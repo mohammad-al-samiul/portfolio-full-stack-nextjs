@@ -38,7 +38,7 @@ export default async function DashboardPage() {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-12">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
-          <p className="text-muted-foreground">Welcome back, {session.user?.name || "Admin"}. Here's what's happening.</p>
+          <p className="text-muted-foreground">Welcome back, {session.user?.name || "Admin"}. Here&apos;s what&apos;s happening.</p>
         </div>
         
         <div className="flex items-center gap-3">

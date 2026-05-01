@@ -190,7 +190,7 @@ export function ShareModal({ isOpen, onClose, slug, title }: ShareModalProps) {
               </div>
 
               {/* Native Share Button */}
-              {navigator.share && (
+              {typeof window !== 'undefined' && typeof navigator.share === 'function' && (
                 <>
                   <div className="h-px bg-border/50" />
                   <button

@@ -8,7 +8,7 @@ import { DeleteConfirmationDialog } from "./DeleteConfirmationDialog";
 
 interface DeleteProjectButtonProps {
   id: string;
-  onDelete?: (id: string) => void;
+  onDelete?: (id: string) => Promise<void>;
   disabled?: boolean;
 }
 
@@ -18,7 +18,7 @@ export function DeleteProjectButton({ id, onDelete, disabled }: DeleteProjectBut
 
   const handleDelete = async () => {
     if (onDelete) {
-      onDelete(id);
+      await onDelete(id);
     } else {
       // Fallback to client-side delete if no onDelete handler provided
       try {

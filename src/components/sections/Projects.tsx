@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, useMemo, useEffect } from "react";
+import { useRef, useState, useMemo } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion, useInView, AnimatePresence } from "framer-motion";
@@ -92,14 +92,14 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
       whileHover={{ y: -8 }}
       className="group relative h-full"
     >
-        <div
-          className={cn(
-            "relative h-full rounded-2xl overflow-hidden",
-            "bg-card border border-border",
-            "shadow-xl hover:shadow-2xl transition-all duration-500",
-            "flex flex-col",
-          )}
-        >
+      <div
+        className={cn(
+          "relative h-full rounded-2xl overflow-hidden",
+          "bg-card border border-border",
+          "shadow-xl hover:shadow-2xl transition-all duration-500",
+          "flex flex-col",
+        )}
+      >
         {/* Image container */}
         <div className="relative h-48 md:h-56 overflow-hidden bg-muted/20">
           <Image
@@ -109,20 +109,20 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
             className="object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
           />
 
-            {/* Featured badge */}
-            {project.featured && (
-              <motion.div
-                initial={{ opacity: 0, x: 20 }}
-                animate={inView ? { opacity: 1, x: 0 } : {}}
-                transition={{ delay: index * 0.06 + 0.2 }}
-                className="absolute top-4 right-4 flex items-center gap-1.5 px-3 py-1.5 text-[10px] uppercase tracking-widest font-bold rounded-full bg-primary/20 text-primary border border-primary/30 shadow-lg"
-              >
-                <Sparkles size={10} />
-                Featured
-              </motion.div>
-            )}
+          {/* Featured badge */}
+          {project.featured && (
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={inView ? { opacity: 1, x: 0 } : {}}
+              transition={{ delay: index * 0.06 + 0.2 }}
+              className="absolute top-4 right-4 flex items-center gap-1.5 px-3 py-1.5 text-[10px] uppercase tracking-widest font-bold rounded-full bg-primary/20 text-primary border border-primary/30 shadow-lg"
+            >
+              <Sparkles size={10} />
+              Featured
+            </motion.div>
+          )}
 
-           {/* Category badge */}
+          {/* Category badge */}
           <div className="absolute top-4 left-4 flex items-center gap-1.5 px-3 py-1.5 text-[10px] uppercase tracking-widest font-bold rounded-full bg-muted/90 text-foreground border border-border">
             {project.category}
           </div>
@@ -226,34 +226,41 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
 const categories = ["All", "Frontend", "Backend", "Fullstack"] as const;
 type Category = (typeof categories)[number];
 
-export function Projects({ initialProjects = [] }: { initialProjects?: any[] }) {
+export function Projects({
+  initialProjects = [],
+}: {
+  initialProjects?: any[];
+}) {
   const [activeCategory, setActiveCategory] = useState<Category>("All");
-  
+
   const headingRef = useRef<HTMLDivElement>(null);
   const headingInView = useInView(headingRef, { once: true, margin: "-60px" });
 
-  const fetchedProjects = useMemo(() => {
+  const fetchedProjects: Project[] = useMemo(() => {
     return initialProjects.map((p: any) => ({
       id: p.id,
       slug: p.slug,
       title: p.title,
       shortDescription: p.description || "",
       fullDescription: p.content || "",
-      image: p.coverImage || "https://images.unsplash.com/photo-1557821552-17105176677c?w=500&h=300&fit=crop",
+      image:
+        p.coverImage ||
+        "https://images.unsplash.com/photo-1557821552-17105176677c?w=500&h=300&fit=crop",
       techStack: p.techStack || [],
       liveLink: p.liveUrl,
       githubLink: p.githubUrl,
-      challenges: [],
-      futureImprovements: [],
+      challenges: [] as string[],
+      futureImprovements: [] as string[],
       featured: p.featured,
-      category: "Fullstack", // Fallback as DB does not have category
+      category: "Fullstack" as const,
     }));
   }, [initialProjects]);
 
   const filteredProjects = useMemo(() => {
     // Use fetched projects, but if empty, can fallback to static projects
-    const dataToFilter = fetchedProjects.length > 0 ? fetchedProjects : projects;
-    
+    const dataToFilter =
+      fetchedProjects.length > 0 ? fetchedProjects : projects;
+
     if (activeCategory === "All") return dataToFilter;
     return dataToFilter.filter((p) => p.category === activeCategory);
   }, [activeCategory, fetchedProjects]);

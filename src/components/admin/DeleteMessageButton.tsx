@@ -1,37 +1,41 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Trash2 } from "lucide-react";
+import { toast } from "sonner";
 import { DeleteConfirmationDialog } from "./DeleteConfirmationDialog";
 
 interface DeleteMessageButtonProps {
   id: string;
-  onDelete?: (id: string) => void;
+  onDelete?: (id: string) => Promise<void>;
   disabled?: boolean;
 }
 
 export function DeleteMessageButton({ id, onDelete, disabled }: DeleteMessageButtonProps) {
   const [dialogOpen, setDialogOpen] = useState(false);
+  const router = useRouter();
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     if (onDelete) {
-      onDelete(id);
+      await onDelete(id);
     } else {
       // Fallback to client-side delete if no onDelete handler provided
-      const deleteMessage = async () => {
-        try {
-          const res = await fetch(`/api/contact/${id}`, {
-            method: "DELETE",
-          });
+      try {
+        const res = await fetch(`/api/contact/${id}`, {
+          method: "DELETE",
+        });
 
-          if (!res.ok) {
-            throw new Error("Failed to delete");
-          }
-        } catch (error) {
-          console.error(error);
+        if (res.ok) {
+          toast.success("Message deleted successfully!");
+          router.refresh();
+        } else {
+          toast.error("Failed to delete message");
         }
-      };
-      deleteMessage();
+      } catch (error) {
+        console.error(error);
+        toast.error("Failed to delete message");
+      }
     }
     setDialogOpen(false);
   };

@@ -2,8 +2,8 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
+import { usePathname } from "next/navigation";
+import { motion } from "framer-motion";
 import { Menu, X, ArrowRight } from "lucide-react";
 import { ThemeToggle } from "./ThemeToggle";
 import { NewsletterModal } from "./NewsletterModal";
@@ -22,86 +22,123 @@ const navLinks = [
 ];
 
 export function Navbar() {
-  const [activeSection, setActiveSection] = React.useState("home");
   const [isScrolled, setIsScrolled] = React.useState(false);
   const [isOpen, setIsOpen] = React.useState(false);
+  const [isMounted, setIsMounted] = React.useState(false);
+  const [hashState, setHashState] = React.useState("home");
   const pathname = usePathname();
-  const router = useRouter();
 
-  // Scroll spy logic
+  // Track mounted state and initial hash
   React.useEffect(() => {
-    if (pathname !== "/") return;
-
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 20);
-
-      const sections = navLinks.map((link) => link.id);
-      let current = "";
-
-      for (const section of sections) {
-        const element = document.getElementById(section);
-        if (element) {
-          const rect = element.getBoundingClientRect();
-          if (rect.top <= 150 && rect.bottom >= 150) {
-            current = section;
-            break;
-          }
-        }
-      }
-
-      if (current) {
-        setActiveSection(current);
-      } else if (window.scrollY === 0) {
-        setActiveSection("home");
-      }
-    };
-
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [pathname]);
-
-  // Handle scroll on mount if coming from another page
-  React.useEffect(() => {
+    setIsMounted(true);
+    // Set initial hash from URL
     if (pathname === "/" && window.location.hash) {
-      const targetId = window.location.hash.substring(1);
-      const elem = document.getElementById(targetId);
-      if (elem) {
-        setTimeout(() => {
-          window.scrollTo({
-            top: elem.offsetTop - 80,
-            behavior: "smooth",
-          });
-        }, 100);
+      const hash = window.location.hash.substring(1);
+      const isValidSection = navLinks.some((link) => link.id === hash);
+      if (isValidSection) {
+        setHashState(hash);
       }
     }
   }, [pathname]);
 
+  // Setup Intersection Observer for scroll-based active state
+  React.useEffect(() => {
+    if (pathname !== "/" || !isMounted) return;
+
+    const observerOptions = {
+      root: null,
+      rootMargin: "-50% 0px -50% 0px", // Trigger when section is in middle of viewport
+      threshold: 0,
+    };
+
+    const observerCallback = (entries: IntersectionObserverEntry[]) => {
+      // Find the first visible section
+      const visibleEntry = entries.find((entry) => entry.isIntersecting);
+
+      if (visibleEntry) {
+        const sectionId = visibleEntry.target.id;
+        // Only update if it's a valid section
+        if (navLinks.some((link) => link.id === sectionId)) {
+          // Update hash silently without triggering full navigation
+          if (window.location.hash !== `#${sectionId}`) {
+            window.history.replaceState(null, "", `#${sectionId}`);
+            setHashState(sectionId);
+          }
+        }
+      }
+    };
+
+    const observer = new IntersectionObserver(
+      observerCallback,
+      observerOptions,
+    );
+
+    // Observe all sections
+    navLinks.forEach((link) => {
+      const element = document.getElementById(link.id);
+      if (element) {
+        observer.observe(element);
+      }
+    });
+
+    return () => {
+      navLinks.forEach((link) => {
+        const element = document.getElementById(link.id);
+        if (element) {
+          observer.unobserve(element);
+        }
+      });
+      observer.disconnect();
+    };
+  }, [isMounted, pathname]);
+
+  // Scroll spy - only for visual feedback, not for active state
+  React.useEffect(() => {
+    if (pathname !== "/" || !isMounted) return;
+
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 20);
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [pathname, isMounted]);
+
+  // Handle navigation to section
   const handleNavClick = (
     e: React.MouseEvent<HTMLAnchorElement>,
-    href: string,
-    id: string
+    id: string,
   ) => {
     setIsOpen(false);
-    
+
     if (pathname === "/") {
       e.preventDefault();
       const elem = document.getElementById(id);
       if (elem) {
+        // Immediately update active state (don't wait for scroll observer)
+        setHashState(id);
         window.scrollTo({
           top: elem.offsetTop - 80,
           behavior: "smooth",
         });
-        setActiveSection(id);
-        // Update URL hash without jumping
-        window.history.pushState(null, "", `#${id}`);
-      } else {
-        if (id === "home") {
-          window.scrollTo({ top: 0, behavior: "smooth" });
-          window.history.pushState(null, "", "/");
-        }
+        // Update hash to match the active state
+        window.history.replaceState(null, "", `#${id}`);
+      } else if (id === "home") {
+        // Immediately update active state for home
+        setHashState("home");
+        window.scrollTo({ top: 0, behavior: "smooth" });
+        window.history.replaceState(null, "", "/");
       }
     }
-    // If not on "/", the Link will handle navigation automatically to "/#id"
+  };
+
+  // Determine active state from hash (on home page) or pathname (on other pages)
+  const getIsActive = (link: { id: string; href: string }) => {
+    if (pathname === "/") {
+      return hashState === link.id;
+    }
+    // On other pages, check if pathname matches
+    return pathname === link.href.split("#")[0];
   };
 
   return (
@@ -116,8 +153,17 @@ export function Navbar() {
     >
       <div className="container mx-auto px-4 md:px-6 h-20 flex items-center justify-between">
         <Link
-          href="/#home"
-          onClick={(e) => handleNavClick(e, "/#home", "home")}
+          href="/"
+          onClick={(e) => {
+            setIsOpen(false);
+            if (pathname === "/") {
+              e.preventDefault();
+              // Immediately set to home
+              setHashState("home");
+              window.scrollTo({ top: 0, behavior: "smooth" });
+              window.history.replaceState(null, "", "/");
+            }
+          }}
           className="group flex items-center gap-2 z-50"
         >
           <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg shadow-primary/20 group-hover:scale-110 transition-transform duration-300">
@@ -131,13 +177,13 @@ export function Navbar() {
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center gap-1 p-1 rounded-2xl bg-muted/30 backdrop-blur-sm border border-white/5">
           {navLinks.map((link) => {
-            const isActive = activeSection === link.id && pathname === "/";
+            const isActive = getIsActive(link);
             return (
               <Link
                 key={link.name}
                 href={link.href}
-                onClick={(e) => handleNavClick(e, link.href, link.id)}
-                className={`relative px-4 py-2 text-sm font-semibold transition-all duration-300 rounded-xl ${
+                onClick={(e) => handleNavClick(e, link.id)}
+                className={`relative px-4 py-2 text-sm font-semibold transition-colors duration-300 rounded-xl ${
                   isActive
                     ? "text-primary"
                     : "text-muted-foreground hover:text-foreground hover:bg-white/5"
@@ -160,12 +206,14 @@ export function Navbar() {
           <div className="hidden md:flex items-center pr-3 border-r border-border/50">
             <ThemeToggle />
           </div>
-          
-          <NewsletterModal trigger={
-            <button className="hidden lg:block px-5 py-2.5 rounded-xl bg-foreground text-background text-xs font-bold uppercase tracking-widest hover:scale-105 transition-all cursor-pointer">
-              Subscribe
-            </button>
-          } />
+
+          <NewsletterModal
+            trigger={
+              <button className="hidden lg:block px-5 py-2.5 rounded-xl bg-foreground text-background text-xs font-bold uppercase tracking-widest hover:scale-105 transition-all cursor-pointer">
+                Subscribe
+              </button>
+            }
+          />
 
           {/* Mobile Toggle */}
           <Button
@@ -180,24 +228,36 @@ export function Navbar() {
 
         {/* Mobile Sidebar */}
         <Sheet open={isOpen} onOpenChange={setIsOpen}>
-          <SheetContent side="right" className="w-[85vw] p-0 bg-background/95 backdrop-blur-2xl border-l border-white/10">
-            <VisuallyHidden><SheetTitle>Menu</SheetTitle></VisuallyHidden>
+          <SheetContent
+            side="right"
+            className="w-[85vw] p-0 bg-background/95 backdrop-blur-2xl border-l border-white/10"
+          >
+            <VisuallyHidden>
+              <SheetTitle>Menu</SheetTitle>
+            </VisuallyHidden>
             <div className="flex flex-col h-full">
               <div className="p-6 border-b border-white/5 flex items-center justify-between">
-                <span className="font-bold text-lg uppercase tracking-widest text-muted-foreground/50">Navigation</span>
-                <Button variant="ghost" size="icon" onClick={() => setIsOpen(false)} className="rounded-xl">
+                <span className="font-bold text-lg uppercase tracking-widest text-muted-foreground/50">
+                  Navigation
+                </span>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setIsOpen(false)}
+                  className="rounded-xl"
+                >
                   <X className="w-5 h-5" />
                 </Button>
               </div>
-              
+
               <nav className="flex-1 p-6 space-y-2">
                 {navLinks.map((link) => {
-                  const isActive = activeSection === link.id && pathname === "/";
+                  const isActive = getIsActive(link);
                   return (
                     <Link
                       key={link.name}
                       href={link.href}
-                      onClick={(e) => handleNavClick(e, link.href, link.id)}
+                      onClick={(e) => handleNavClick(e, link.id)}
                       className={`flex items-center justify-between p-4 rounded-2xl text-lg font-bold transition-all ${
                         isActive
                           ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20"
@@ -205,7 +265,10 @@ export function Navbar() {
                       }`}
                     >
                       {link.name}
-                      <ArrowRight size={18} className={isActive ? "opacity-100" : "opacity-0"} />
+                      <ArrowRight
+                        size={18}
+                        className={isActive ? "opacity-100" : "opacity-0"}
+                      />
                     </Link>
                   );
                 })}
@@ -213,7 +276,9 @@ export function Navbar() {
 
               <div className="p-8 border-t border-white/5 flex items-center justify-between">
                 <ThemeToggle />
-                <span className="text-xs text-muted-foreground font-medium">© 2026 Al Samiul</span>
+                <span className="text-xs text-muted-foreground font-medium">
+                  © 2026 Al Samiul
+                </span>
               </div>
             </div>
           </SheetContent>

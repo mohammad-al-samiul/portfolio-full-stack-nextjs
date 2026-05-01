@@ -16,7 +16,7 @@ const postSchema = z.object({
 
 export async function PATCH(
   req: Request,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const session = await auth();
@@ -35,17 +35,23 @@ export async function PATCH(
 
     return NextResponse.json(post);
   } catch (error) {
+    console.error("[POSTS_PATCH]", error);
     if (error instanceof z.ZodError) {
-      return new NextResponse(JSON.stringify(error.issues), { status: 422 });
+      return NextResponse.json(
+        { message: "Validation Error", errors: error.issues },
+        { status: 422 },
+      );
     }
 
-    return new NextResponse(null, { status: 500 });
+    const message =
+      error instanceof Error ? error.message : "Internal Server Error";
+    return NextResponse.json({ message }, { status: 500 });
   }
 }
 
 export async function DELETE(
   req: Request,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const session = await auth();
@@ -60,13 +66,16 @@ export async function DELETE(
 
     return new NextResponse(null, { status: 204 });
   } catch (error) {
-    return new NextResponse(null, { status: 500 });
+    console.error("[POSTS_DELETE]", error);
+    const message =
+      error instanceof Error ? error.message : "Failed to delete post";
+    return NextResponse.json({ message }, { status: 500 });
   }
 }
 
 export async function GET(
   req: Request,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const { id } = await params;
@@ -75,11 +84,14 @@ export async function GET(
     });
 
     if (!post) {
-      return new NextResponse("Not Found", { status: 404 });
+      return NextResponse.json({ error: "Post not found" }, { status: 404 });
     }
 
     return NextResponse.json(post);
   } catch (error) {
-    return new NextResponse(null, { status: 500 });
+    console.error("[POSTS_GET]", error);
+    const message =
+      error instanceof Error ? error.message : "Failed to fetch post";
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }

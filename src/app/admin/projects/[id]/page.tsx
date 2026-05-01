@@ -2,6 +2,8 @@ import { notFound, redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { ProjectForm } from "@/components/admin/ProjectForm";
+import { ProjectFormSkeleton } from "@/components/admin/ProjectFormSkeleton";
+import { Suspense } from "react";
 
 interface ProjectEditorPageProps {
   params: Promise<{ id: string }>;
@@ -33,7 +35,9 @@ export default async function ProjectEditorPage({ params }: ProjectEditorPagePro
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <ProjectForm initialData={project} />
+      <Suspense fallback={<ProjectFormSkeleton />}>
+        <ProjectForm initialData={project} />
+      </Suspense>
     </div>
   );
 }

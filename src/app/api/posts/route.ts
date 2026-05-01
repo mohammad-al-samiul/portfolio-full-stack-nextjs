@@ -45,10 +45,24 @@ export async function GET() {
     const posts = await prisma.post.findMany({
       where: { published: true },
       orderBy: { createdAt: "desc" },
+      select: {
+        id: true,
+        slug: true,
+        title: true,
+        excerpt: true,
+        coverImage: true,
+        category: true,
+        tags: true,
+        createdAt: true,
+        updatedAt: true,
+      },
     });
 
     return NextResponse.json(posts);
   } catch (error) {
-    return new NextResponse(null, { status: 500 });
+    console.error("[POSTS_GET]", error);
+    const message =
+      error instanceof Error ? error.message : "Failed to fetch posts";
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }

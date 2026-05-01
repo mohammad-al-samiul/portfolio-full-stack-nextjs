@@ -3,13 +3,12 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
-import { 
-  LayoutDashboard, 
-  FileText, 
-  Briefcase, 
-  Settings,
+import {
+  LayoutDashboard,
+  FileText,
+  Briefcase,
   Mail,
-  ExternalLink 
+  ExternalLink,
 } from "lucide-react";
 import { SignOutButton } from "./SignOutButton";
 import { cn } from "@/lib/utils";
@@ -29,24 +28,15 @@ export function Sidebar({ user }: SidebarProps) {
     { name: "Articles", href: "/admin/posts", icon: FileText },
     { name: "Portfolio", href: "/admin/projects", icon: Briefcase },
     { name: "Inbox", href: "/admin/messages", icon: Mail },
-    { name: "Settings", href: "/admin/settings", icon: Settings },
   ];
 
   return (
     <aside className="w-full md:w-72 md:h-screen md:sticky md:top-0 border-b md:border-b-0 md:border-r border-border/50 bg-card/30 backdrop-blur-3xl z-30 flex flex-col">
       <div className="p-8">
-        <Link href="/" className="flex items-center gap-3 mb-10 group">
-          <div className="w-10 h-10 rounded-2xl bg-primary flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg shadow-primary/20 group-hover:scale-110 transition-transform duration-300">
-            M
-          </div>
-          <div className="flex flex-col">
-            <span className="font-bold tracking-tight text-lg leading-none">Console</span>
-            <span className="text-[10px] uppercase tracking-widest text-muted-foreground font-bold mt-1">v1.0.4</span>
-          </div>
-        </Link>
-
         <nav className="space-y-1">
-          <p className="px-4 text-[10px] font-bold uppercase tracking-widest text-muted-foreground/50 mb-3">Main Menu</p>
+          <p className="px-4 text-[10px] font-bold uppercase tracking-widest text-muted-foreground/50 mb-3">
+            Main Menu
+          </p>
           {navLinks.map((link) => {
             const isActive = pathname.startsWith(link.href);
             return (
@@ -55,9 +45,9 @@ export function Sidebar({ user }: SidebarProps) {
                 href={link.href}
                 className={cn(
                   "flex items-center gap-3 px-4 py-3.5 rounded-2xl text-sm font-bold transition-all group relative",
-                  isActive 
-                    ? "text-primary bg-primary/5" 
-                    : "text-muted-foreground hover:bg-primary/5 hover:text-primary"
+                  isActive
+                    ? "text-primary bg-primary/5"
+                    : "text-muted-foreground hover:bg-primary/5 hover:text-primary",
                 )}
               >
                 {isActive && (
@@ -67,7 +57,13 @@ export function Sidebar({ user }: SidebarProps) {
                     transition={{ type: "spring", stiffness: 300, damping: 30 }}
                   />
                 )}
-                <link.icon size={20} className={cn("transition-transform group-hover:scale-110", isActive && "scale-110")} />
+                <link.icon
+                  size={20}
+                  className={cn(
+                    "transition-transform group-hover:scale-110",
+                    isActive && "scale-110",
+                  )}
+                />
                 {link.name}
               </Link>
             );
@@ -81,8 +77,12 @@ export function Sidebar({ user }: SidebarProps) {
             {user?.name?.[0] || user?.email?.[0] || "A"}
           </div>
           <div className="flex flex-col min-w-0">
-            <span className="text-sm font-bold truncate">{user?.name || user?.email || "Admin"}</span>
-            <span className="text-[10px] text-muted-foreground truncate uppercase tracking-widest font-bold">Administrator</span>
+            <span className="text-sm font-bold truncate">
+              {user?.name || user?.email || "Admin"}
+            </span>
+            <span className="text-[10px] text-muted-foreground truncate uppercase tracking-widest font-bold">
+              Administrator
+            </span>
           </div>
         </div>
         <SignOutButton />

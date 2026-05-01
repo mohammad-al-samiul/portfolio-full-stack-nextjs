@@ -13,8 +13,7 @@ import {
   Code2,
   Zap,
   Lightbulb,
-  CheckCircle2,
-  Calendar,
+  Sparkles,
   Layers,
 } from "lucide-react";
 
@@ -31,14 +30,14 @@ export function ProjectDetail({ project }: ProjectDetailProps) {
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.1,
+        staggerChildren: 0.15,
         delayChildren: 0.1,
       },
     },
   };
 
   const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
+    hidden: { opacity: 0, y: 30 },
     visible: {
       opacity: 1,
       y: 0,
@@ -49,20 +48,28 @@ export function ProjectDetail({ project }: ProjectDetailProps) {
   return (
     <div className="relative min-h-screen bg-background overflow-hidden selection:bg-primary/30">
       {/* Background patterns */}
-      <div className="absolute inset-0 opacity-[0.03] dark:opacity-[0.05] pointer-events-none">
+      <div className="absolute inset-0 opacity-[0.02] dark:opacity-[0.03] pointer-events-none">
         <div className="absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:40px_40px]" />
       </div>
 
       {/* Background effects */}
       <div className="pointer-events-none absolute inset-0">
-        <div className="absolute inset-0 bg-linear-to-b from-primary/5 via-transparent to-transparent" />
+        <div className="absolute inset-0 bg-linear-to-b from-primary/3 via-transparent to-transparent" />
         <motion.div
           animate={{
             scale: [1, 1.1, 1],
-            opacity: [0.1, 0.2, 0.1],
+            opacity: [0.08, 0.12, 0.08],
           }}
-          transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute top-0 right-0 w-[800px] h-[800px] bg-primary/10 rounded-full blur-[120px]"
+          transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute top-0 right-0 w-[900px] h-[900px] bg-primary/10 rounded-full blur-[150px]"
+        />
+        <motion.div
+          animate={{
+            scale: [1, 1.05, 1],
+            opacity: [0.05, 0.08, 0.05],
+          }}
+          transition={{ duration: 25, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute bottom-0 left-0 w-[700px] h-[700px] bg-primary/5 rounded-full blur-[120px]"
         />
       </div>
 
@@ -72,14 +79,14 @@ export function ProjectDetail({ project }: ProjectDetailProps) {
         initial="hidden"
         animate={inView ? "visible" : "hidden"}
         variants={containerVariants}
-        className="relative mx-auto max-w-5xl px-4 md:px-6 lg:px-8 py-12 md:py-24"
+        className="relative mx-auto max-w-7xl px-4 md:px-6 lg:px-8 py-8 md:py-16 lg:py-24"
       >
         {/* Navigation */}
-        <motion.div variants={itemVariants} className="mb-12">
-          <Link
-            href="/#projects"
-            className="group inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/5 border border-white/10 text-muted-foreground hover:text-foreground hover:border-primary/50 transition-all duration-300 backdrop-blur-md"
-          >
+        <motion.div variants={itemVariants} className="mb-8 md:mb-16">
+             <Link
+              href="/#projects"
+              className="group inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-muted/50 border border-border text-muted-foreground hover:text-foreground hover:border-primary/50 transition-all duration-300"
+            >
             <ArrowLeft
               size={18}
               className="group-hover:-translate-x-1 transition-transform"
@@ -90,169 +97,295 @@ export function ProjectDetail({ project }: ProjectDetailProps) {
           </Link>
         </motion.div>
 
-        {/* Hero Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 mb-20">
-          <motion.div variants={itemVariants} className="lg:col-span-7">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 mb-6">
-              <Layers size={14} className="text-primary" />
-              <span className="text-[10px] font-bold uppercase tracking-widest text-primary">
-                {project.category}
-              </span>
-            </div>
+        {/* Hero Section - Full Width Banner Style */}
+        <motion.div variants={itemVariants} className="mb-20">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-center">
+            {/* Left: Content */}
+            <div className="lg:col-span-7 space-y-6">
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 border border-primary/20">
+                <Layers size={14} className="text-primary" />
+                <span className="text-[10px] font-bold uppercase tracking-widest text-primary">
+                  {project.category}
+                </span>
+              </div>
 
-            <h1 className="text-4xl md:text-7xl font-bold tracking-tight text-foreground mb-6 leading-tight">
-              {project.title}
-            </h1>
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold tracking-tight -tracking-[0.02em] text-foreground mb-6 leading-[1.1]">
+                {project.title}
+              </h1>
 
-            <p className="text-xl text-muted-foreground leading-relaxed mb-8">
-              {project.shortDescription}
-            </p>
+              <p className="text-lg sm:text-xl text-muted-foreground leading-relaxed max-w-2xl mb-8">
+                {project.shortDescription}
+              </p>
 
-            <div className="flex flex-wrap gap-4">
-              {project.liveLink && (
-                <motion.a
-                  href={project.liveLink}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  whileHover={{ scale: 1.05, y: -2 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="inline-flex items-center gap-2 px-8 py-4 rounded-2xl bg-primary text-primary-foreground font-bold uppercase tracking-widest text-xs shadow-xl shadow-primary/20 hover:shadow-primary/40 transition-all duration-300"
-                >
-                  <ExternalLink size={18} />
-                  Live Preview
-                </motion.a>
-              )}
-              {project.githubLink && (
-                <motion.a
+              <div className="flex flex-wrap gap-4">
+                {project.liveLink && (
+                  <motion.a
+                    href={project.liveLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    whileHover={{ scale: 1.03, y: -2 }}
+                    whileTap={{ scale: 0.97 }}
+                    className="group relative inline-flex items-center gap-2 px-8 py-4 rounded-2xl bg-primary text-primary-foreground font-bold uppercase tracking-widest text-xs shadow-xl shadow-primary/30 hover:shadow-primary/50 transition-all duration-500 overflow-hidden"
+                  >
+                    <span className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                    <ExternalLink size={18} className="relative z-10" />
+                    <span className="relative z-10">Live Preview</span>
+                  </motion.a>
+                )}
+                {project.githubLink && (
+                 <motion.a
                   href={project.githubLink}
                   target="_blank"
                   rel="noopener noreferrer"
-                  whileHover={{ scale: 1.05, y: -2 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="inline-flex items-center gap-2 px-8 py-4 rounded-2xl bg-white/5 border border-white/10 text-foreground font-bold uppercase tracking-widest text-xs hover:bg-white/10 transition-all duration-300 backdrop-blur-md"
+                  whileHover={{ scale: 1.03, y: -2 }}
+                  whileTap={{ scale: 0.97 }}
+                  className="group relative inline-flex items-center gap-2 px-8 py-4 rounded-2xl bg-white/5 border border-white/10 text-foreground font-bold uppercase tracking-widest text-xs hover:bg-white/10 hover:border-primary/30 transition-all duration-500"
                 >
-                  <GitBranch size={18} />
-                  Source Code
-                </motion.a>
-              )}
-            </div>
-          </motion.div>
-
-          <motion.div
-            variants={itemVariants}
-            className="lg:col-span-5 relative"
-          >
-            <div className="aspect-square rounded-3xl overflow-hidden border border-white/10 shadow-2xl relative group">
-              <Image
-                src={project.image}
-                alt={project.title}
-                fill
-                className="object-cover transition-transform duration-700 group-hover:scale-105"
-                priority
-              />
-              <div className="absolute inset-0 bg-linear-to-t from-black/60 via-transparent to-transparent opacity-40" />
-            </div>
-
-            {/* Floating decoration */}
-            <div className="absolute -bottom-6 -left-6 p-6 rounded-2xl bg-background/80 backdrop-blur-xl border border-white/10 shadow-xl hidden md:block">
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-xl bg-primary/20 flex items-center justify-center text-primary">
-                  <Calendar size={24} />
-                </div>
-                <div>
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
-                    Status
-                  </p>
-                  <p className="text-sm font-bold">Production Ready</p>
-                </div>
+                    <GitBranch size={18} />
+                    Source Code
+                  </motion.a>
+                )}
               </div>
             </div>
-          </motion.div>
-        </div>
 
-        {/* Content Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 md:gap-16">
-          <div className="lg:col-span-2 space-y-16">
-            <motion.section variants={itemVariants}>
-              <MarkdownRenderer
-                content={project.fullDescription || "No content provided."}
-              />
-            </motion.section>
-          </div>
-
-          <aside className="space-y-10">
-            {/* Tech Stack Sidebar */}
+            {/* Right: Hero Image - Full Width, Prominent */}
             <motion.div
               variants={itemVariants}
-              className="p-8 rounded-3xl bg-white/5 border border-white/10 backdrop-blur-md sticky top-24"
+              className="lg:col-span-5 relative"
             >
-              <h3 className="text-xl font-bold mb-6 flex items-center gap-2">
+               <div className="relative aspect-video lg:aspect-[16/10] w-full rounded-3xl overflow-hidden border border-border/50 shadow-2xl shadow-primary/20 group">
+                <div className="absolute bottom-0 left-0 right-0 h-1/3 bg-gradient-to-t from-black/40 to-transparent z-10" />
+                <Image
+                  src={project.image}
+                  alt={project.title}
+                  fill
+                  className="object-contain bg-muted transition-transform duration-1000 group-hover:scale-105"
+                  priority
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 400px"
+                />
+                {/* Subtle overlay gradient for better readability */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+              </div>
+
+              {/* Floating status badge */}
+              <div className="absolute -bottom-2 -left-4 px-4 py-3 rounded-xl bg-card border border-border shadow-lg z-20 hidden md:flex">
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-lg bg-primary/15 flex items-center justify-center text-primary">
+                    <Sparkles size={18} />
+                  </div>
+                  <div>
+                    <p className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground">
+                      Status
+                    </p>
+                    <p className="text-sm font-bold text-foreground">
+                      Production Ready
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        </motion.div>
+
+        {/* Content Grid - SaaS Layout */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 lg:gap-20">
+          {/* Left: Markdown Content */}
+          <div className="lg:col-span-2 space-y-16">
+            <motion.section variants={itemVariants}>
+              <div className="prose prose-neutral dark:prose-invert prose-lg max-w-none">
+                <MarkdownRenderer
+                  content={project.fullDescription || "No content provided."}
+                />
+              </div>
+            </motion.section>
+
+            {/* Challenges Section */}
+            {(project.challenges || project.futureImprovements) && (
+              <motion.section
+                variants={itemVariants}
+                className="pt-8 border-t border-border/50"
+              >
+                <div className="grid md:grid-cols-2 gap-8">
+                  {project.challenges && project.challenges.length > 0 && (
+                    <div>
+                      <div className="flex items-center gap-2 mb-4">
+                        <Zap size={20} className="text-primary" />
+                        <h3 className="text-lg font-bold">Key Challenges</h3>
+                      </div>
+                      <ul className="space-y-3">
+                        {project.challenges.map((challenge, idx) => (
+                          <motion.li
+                            key={idx}
+                            initial={{ opacity: 0, x: -20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: 0.3 + idx * 0.1 }}
+                            className="flex items-start gap-3 text-sm text-muted-foreground"
+                          >
+                            <span className="w-1.5 h-1.5 rounded-full bg-primary/60 mt-2 flex-shrink-0" />
+                            {challenge}
+                          </motion.li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                  {project.futureImprovements &&
+                    project.futureImprovements.length > 0 && (
+                      <div>
+                        <div className="flex items-center gap-2 mb-4">
+                          <Lightbulb size={20} className="text-primary" />
+                          <h3 className="text-lg font-bold">
+                            Future Enhancements
+                          </h3>
+                        </div>
+                        <ul className="space-y-3">
+                          {project.futureImprovements.map(
+                            (improvement, idx) => (
+                              <motion.li
+                                key={idx}
+                                initial={{ opacity: 0, x: 20 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                transition={{ delay: 0.3 + idx * 0.1 }}
+                                className="flex items-start gap-3 text-sm text-muted-foreground"
+                              >
+                                <span className="w-1.5 h-1.5 rounded-full bg-primary/30 mt-2 flex-shrink-0" />
+                                {improvement}
+                              </motion.li>
+                            ),
+                          )}
+                        </ul>
+                      </div>
+                    )}
+                </div>
+              </motion.section>
+            )}
+          </div>
+
+          {/* Right: Sticky Sidebar */}
+          <aside className="space-y-6">
+             <motion.div
+              variants={itemVariants}
+              className="p-6 rounded-3xl bg-card border border-border shadow-xl sticky top-24"
+            >
+              <h3 className="text-lg font-bold mb-6 flex items-center gap-2">
                 <Code2 size={20} className="text-primary" />
-                Technology
+                Technology Stack
               </h3>
               <div className="flex flex-wrap gap-2">
-                {project.techStack.map((tech) => (
-                  <span
+                {project.techStack.map((tech, idx) => (
+                  <motion.span
                     key={tech}
-                    className="px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-sm font-medium hover:border-primary/50 transition-colors cursor-default"
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: 0.5 + idx * 0.05 }}
+                     className="px-3 py-1.5 rounded-lg bg-white/5 border border-border text-sm font-medium text-foreground/90 hover:border-primary/50 hover:bg-primary/5 transition-all duration-300 cursor-default backdrop-blur-sm"
                   >
                     {tech}
-                  </span>
+                  </motion.span>
                 ))}
               </div>
 
-              <div className="mt-10 pt-10 border-t border-white/10">
-                <h4 className="text-sm font-bold uppercase tracking-widest text-muted-foreground mb-4">
-                  Key Features
+              <div className="mt-6 pt-6 border-t border-white/10">
+                <h4 className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-4">
+                  Project Links
                 </h4>
-                <ul className="space-y-3">
-                  {[
-                    "Responsive Design",
-                    "API Integration",
-                    "Secure Auth",
-                    "Performance Optimized",
-                  ].map((feature) => (
-                    <li
-                      key={feature}
-                      className="flex items-center gap-2 text-sm text-muted-foreground"
+                <div className="space-y-2">
+                  {project.liveLink && (
+                    <a
+                      href={project.liveLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="group flex items-center gap-2 px-3 py-2 rounded-xl bg-primary/10 border border-primary/20 text-primary text-sm font-medium hover:bg-primary/20 transition-all duration-300"
                     >
-                      <CheckCircle2 size={16} className="text-primary" />
-                      {feature}
-                    </li>
-                  ))}
-                </ul>
+                      <ExternalLink
+                        size={16}
+                        className="group-hover:translate-x-0.5 transition-transform"
+                      />
+                      Live Demo
+                    </a>
+                  )}
+                  {project.githubLink && (
+                    <a
+                      href={project.githubLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="group flex items-center gap-2 px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-foreground/80 text-sm font-medium hover:bg-white/10 transition-all duration-300"
+                    >
+                      <GitBranch
+                        size={16}
+                        className="group-hover:rotate-12 transition-transform"
+                      />
+                      Repository
+                    </a>
+                  )}
+                </div>
+              </div>
+
+              <div className="mt-6 pt-6 border-t border-white/10">
+                <h4 className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-4">
+                  Project Status
+                </h4>
+                <div className="flex items-center gap-3">
+                  <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                  <span className="text-sm font-medium text-green-500">
+                    Production Ready
+                  </span>
+                </div>
               </div>
             </motion.div>
           </aside>
         </div>
 
-        {/* Footer CTA */}
-        <motion.div
-          variants={itemVariants}
-          className="mt-32 p-12 md:p-16 rounded-[2rem] bg-linear-to-br from-primary/20 via-primary/5 to-transparent border border-primary/20 text-center relative overflow-hidden group"
-        >
-          <div className="relative z-10">
-            <h3 className="text-3xl md:text-5xl font-bold text-foreground mb-6">
-              Let&apos;s build something <br className="hidden md:block" />{" "}
-              amazing together.
-            </h3>
-            <p className="text-muted-foreground mb-10 max-w-xl mx-auto text-lg">
-              Inspired by this project? I&apos;m currently available for new
-              opportunities and collaborations.
-            </p>
-            <Link href="/#contact">
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="px-10 py-5 rounded-2xl bg-foreground text-background font-bold uppercase tracking-widest text-xs hover:bg-primary hover:text-primary-foreground transition-all duration-500 shadow-2xl shadow-black/20"
+        {/* CTA Section - Enhanced */}
+        <motion.div variants={itemVariants} className="mt-24 md:mt-32 relative">
+          <div className="absolute inset-0 bg-gradient-to-r from-primary/10 via-primary/5 to-transparent rounded-[2rem]" />
+          <div className="relative z-10 p-8 md:p-16 rounded-[2rem] bg-gradient-to-br from-primary/10 via-primary/5 to-transparent border border-primary/20 backdrop-blur-sm">
+            <div className="text-center max-w-3xl mx-auto">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6 }}
               >
-                Get in Touch
-              </motion.button>
-            </Link>
-          </div>
+                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/20 border border-primary/30 mb-6">
+                  <Sparkles size={16} className="text-primary" />
+                  <span className="text-xs font-bold uppercase tracking-widest text-primary">
+                    Let&apos;s Collaborate
+                  </span>
+                </div>
+                <h3 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight -tracking-[0.02em] text-foreground mb-6">
+                  Ready to build something <br className="hidden sm:block" />
+                  <span className="bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent">
+                    amazing together?
+                  </span>
+                </h3>
+                <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
+                  Have a project in mind or want to discuss potential
+                  opportunities? I&apos;m currently available for new
+                  collaborations and freelance work.
+                </p>
+                <Link href="/#contact">
+                  <motion.button
+                    whileHover={{ scale: 1.05, y: -3 }}
+                    whileTap={{ scale: 0.97 }}
+                    className="group relative inline-flex items-center gap-3 px-10 py-5 rounded-2xl bg-foreground text-background font-bold uppercase tracking-widest text-xs hover:bg-primary hover:text-primary-foreground transition-all duration-500 shadow-2xl shadow-black/20 overflow-hidden"
+                  >
+                    <span className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                    <span className="relative z-10 flex items-center gap-2">
+                      <Sparkles
+                        size={16}
+                        className="group-hover:rotate-12 transition-transform"
+                      />
+                      Get in Touch
+                    </span>
+                  </motion.button>
+                </Link>
+              </motion.div>
+            </div>
 
-          {/* Animated background element */}
-          <div className="absolute -bottom-20 -right-20 w-64 h-64 bg-primary/20 rounded-full blur-[80px] group-hover:scale-150 transition-transform duration-1000" />
+            {/* Animated orbs */}
+            <div className="absolute -top-20 -left-20 w-40 h-40 bg-primary/10 rounded-full blur-[60px] animate-pulse" />
+            <div className="absolute -bottom-20 -right-20 w-40 h-40 bg-primary/10 rounded-full blur-[60px] animate-pulse" />
+          </div>
         </motion.div>
       </motion.div>
     </div>

@@ -1,16 +1,25 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { motion } from "framer-motion";
+import { toast } from "sonner";
+
 import { cn } from "@/lib/utils";
-import { Save, ArrowLeft, Loader2, Image as ImageIcon, Send, FileText } from "lucide-react";
+import {
+  Save,
+  ArrowLeft,
+  Loader2,
+  Image as ImageIcon,
+  FileText,
+} from "lucide-react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import "easymde/dist/easymde.min.css";
 
 // Dynamic import for SimpleMDE to avoid SSR issues
-const SimpleMDE = dynamic(() => import("react-simplemde-editor"), { ssr: false });
+const SimpleMDE = dynamic(() => import("react-simplemde-editor"), {
+  ssr: false,
+});
 
 interface PostFormProps {
   initialData?: any;
@@ -31,17 +40,39 @@ export function PostForm({ initialData }: PostFormProps) {
     published: initialData?.published || false,
   });
 
+  // Use ref to prevent unnecessary re-renders of SimpleMDE
+  const contentRef = useRef(formData.content);
+
+  const handleContentChange = useCallback((value: string) => {
+    contentRef.current = value;
+  }, []);
+
+  // Sync content to formData on blur or before submit
+  const syncContentToFormData = useCallback(() => {
+    setFormData((prev) => ({
+      ...prev,
+      content: contentRef.current,
+    }));
+  }, []);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    syncContentToFormData();
     setLoading(true);
 
     const payload = {
       ...formData,
-      tags: formData.tags.split(",").map((t: string) => t.trim()).filter(Boolean),
+      content: contentRef.current,
+      tags: formData.tags
+        .split(",")
+        .map((t: string) => t.trim())
+        .filter(Boolean),
     };
 
     try {
-      const url = initialData?.id ? `/api/posts/${initialData.id}` : "/api/posts";
+      const url = initialData?.id
+        ? `/api/posts/${initialData.id}`
+        : "/api/posts";
       const method = initialData?.id ? "PATCH" : "POST";
 
       const res = await fetch(url, {
@@ -51,11 +82,13 @@ export function PostForm({ initialData }: PostFormProps) {
       });
 
       if (res.ok) {
-        router.push("/admin");
+        toast.success(initialData?.id ? "Post updated successfully!" : "Post created successfully!");
+        router.push("/admin/posts");
         router.refresh();
       }
     } catch (error) {
       console.error("Failed to save post", error);
+      toast.error("Failed to save post");
     } finally {
       setLoading(false);
     }
@@ -65,8 +98,11 @@ export function PostForm({ initialData }: PostFormProps) {
     <form onSubmit={handleSubmit} className="space-y-8 pb-20">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 bg-background/80 backdrop-blur-md sticky top-0 z-20 py-4 border-b border-border/50 -mx-6 px-6">
         <div className="flex items-center gap-4">
-          <Link href="/admin">
-            <button type="button" className="p-2 rounded-xl bg-muted hover:bg-muted/80 transition-colors border border-border/50">
+          <Link href="/admin/posts">
+            <button
+              type="button"
+              className="p-2 rounded-xl bg-muted hover:bg-muted/80 transition-colors border border-border/50"
+            >
               <ArrowLeft size={20} />
             </button>
           </Link>
@@ -77,12 +113,14 @@ export function PostForm({ initialData }: PostFormProps) {
         <div className="flex items-center gap-3">
           <button
             type="button"
-            onClick={() => setFormData({ ...formData, published: !formData.published })}
+            onClick={() =>
+              setFormData({ ...formData, published: !formData.published })
+            }
             className={cn(
               "px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-widest transition-all",
-              formData.published 
-                ? "bg-emerald-500/10 text-emerald-500 border border-emerald-500/20" 
-                : "bg-amber-500/10 text-amber-500 border border-amber-500/20"
+              formData.published
+                ? "bg-emerald-500/10 text-emerald-500 border border-emerald-500/20"
+                : "bg-amber-500/10 text-amber-500 border border-amber-500/20",
             )}
           >
             {formData.published ? "Published" : "Draft"}
@@ -92,7 +130,11 @@ export function PostForm({ initialData }: PostFormProps) {
             disabled={loading}
             className="flex items-center gap-2 px-6 py-3 rounded-xl bg-primary text-primary-foreground font-bold uppercase tracking-widest text-xs shadow-xl shadow-primary/20 hover:shadow-primary/40 transition-all duration-300 disabled:opacity-70"
           >
-            {loading ? <Loader2 className="animate-spin" size={18} /> : <Save size={18} />}
+            {loading ? (
+              <Loader2 className="animate-spin" size={18} />
+            ) : (
+              <Save size={18} />
+            )}
             Save Post
           </button>
         </div>
@@ -105,7 +147,9 @@ export function PostForm({ initialData }: PostFormProps) {
             <input
               type="text"
               value={formData.title}
-              onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, title: e.target.value })
+              }
               placeholder="Enter post title..."
               className="w-full text-4xl md:text-5xl font-bold bg-transparent border-none outline-none placeholder:text-muted-foreground/30 focus:ring-0 p-0"
               required
@@ -115,7 +159,12 @@ export function PostForm({ initialData }: PostFormProps) {
               <input
                 type="text"
                 value={formData.slug}
-                onChange={(e) => setFormData({ ...formData, slug: e.target.value.toLowerCase().replace(/\s+/g, "-") })}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    slug: e.target.value.toLowerCase().replace(/\s+/g, "-"),
+                  })
+                }
                 placeholder="post-slug"
                 className="bg-transparent border-none outline-none focus:ring-0 p-0 font-mono text-primary"
                 required
@@ -124,10 +173,14 @@ export function PostForm({ initialData }: PostFormProps) {
           </div>
 
           <div className="space-y-2">
-            <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground ml-1">Excerpt</label>
+            <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground ml-1">
+              Excerpt
+            </label>
             <textarea
               value={formData.excerpt}
-              onChange={(e) => setFormData({ ...formData, excerpt: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, excerpt: e.target.value })
+              }
               placeholder="Brief summary for listing pages..."
               rows={3}
               className="w-full p-4 rounded-2xl bg-muted/50 border border-border focus:border-primary/50 focus:ring-0 transition-all outline-none text-muted-foreground"
@@ -136,10 +189,12 @@ export function PostForm({ initialData }: PostFormProps) {
           </div>
 
           <div className="space-y-2 prose prose-invert max-w-none">
-            <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground ml-1">Content (Markdown)</label>
+            <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground ml-1">
+              Content (Markdown)
+            </label>
             <SimpleMDE
-              value={formData.content}
-              onChange={(value) => setFormData({ ...formData, content: value })}
+              value={contentRef.current}
+              onChange={handleContentChange}
               options={{
                 spellChecker: false,
                 autofocus: false,
@@ -152,49 +207,78 @@ export function PostForm({ initialData }: PostFormProps) {
 
         {/* Sidebar */}
         <div className="lg:col-span-4 space-y-8">
-          <div className="glass p-6 rounded-3xl space-y-6">
-            <div className="space-y-4">
-              <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground ml-1 block">Category</label>
-              <select
-                value={formData.category}
-                onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                className="w-full p-3 rounded-xl bg-muted/50 border border-border focus:border-primary/50 focus:ring-0 transition-all outline-none"
-              >
-                <option value="Frontend">Frontend</option>
-                <option value="Backend">Backend</option>
-                <option value="Fullstack">Fullstack</option>
-                <option value="DevOps">DevOps</option>
-                <option value="AI">AI</option>
-              </select>
+          <div className="p-6 rounded-3xl bg-card border border-border/50 shadow-xl space-y-6">
+             <div className="space-y-4">
+               <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground ml-1 block">
+                 Category
+               </label>
+               <div className="relative">
+                 <select
+                   value={formData.category}
+                   onChange={(e) =>
+                     setFormData({ ...formData, category: e.target.value })
+                   }
+                   className="w-full p-3 rounded-xl bg-muted/50 border border-border focus:border-primary/50 focus:ring-0 transition-all outline-none appearance-none cursor-pointer hover:bg-muted/70 peer"
+                 >
+                   <option value="Frontend">Frontend</option>
+                   <option value="Backend">Backend</option>
+                   <option value="Fullstack">Fullstack</option>
+                   <option value="DevOps">DevOps</option>
+                   <option value="AI">AI</option>
+                 </select>
+                 <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none transition-transform peer-focus:rotate-180">
+                   <svg className="w-4 h-4 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                   </svg>
+                </div>
+              </div>
             </div>
 
             <div className="space-y-4">
-              <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground ml-1 block">Cover Image URL</label>
+              <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground ml-1 block">
+                Cover Image URL
+              </label>
               <div className="relative">
-                <ImageIcon className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={16} />
+                <ImageIcon
+                  className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+                  size={16}
+                />
                 <input
                   type="text"
                   value={formData.coverImage}
-                  onChange={(e) => setFormData({ ...formData, coverImage: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, coverImage: e.target.value })
+                  }
                   placeholder="https://images.unsplash.com/..."
                   className="w-full pl-10 pr-4 py-3 rounded-xl bg-muted/50 border border-border focus:border-primary/50 focus:ring-0 transition-all outline-none text-sm"
                 />
               </div>
               {formData.coverImage && (
                 <div className="relative aspect-video rounded-xl overflow-hidden border border-border">
-                  <img src={formData.coverImage} alt="Cover preview" className="object-cover w-full h-full" />
+                  <img
+                    src={formData.coverImage}
+                    alt="Cover preview"
+                    className="object-cover w-full h-full"
+                  />
                 </div>
               )}
             </div>
 
             <div className="space-y-4">
-              <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground ml-1 block">Tags (comma separated)</label>
+              <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground ml-1 block">
+                Tags (comma separated)
+              </label>
               <div className="relative">
-                <FileText className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={16} />
+                <FileText
+                  className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+                  size={16}
+                />
                 <input
                   type="text"
                   value={formData.tags}
-                  onChange={(e) => setFormData({ ...formData, tags: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, tags: e.target.value })
+                  }
                   placeholder="React, Next.js, AI"
                   className="w-full pl-10 pr-4 py-3 rounded-xl bg-muted/50 border border-border focus:border-primary/50 focus:ring-0 transition-all outline-none text-sm"
                 />
@@ -206,4 +290,3 @@ export function PostForm({ initialData }: PostFormProps) {
     </form>
   );
 }
-

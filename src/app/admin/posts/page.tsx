@@ -1,9 +1,10 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
-import { Plus, Edit, Trash2, ExternalLink, Search, Filter } from "lucide-react";
+import { Plus } from "lucide-react";
 import { format } from "date-fns";
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
+import { PostRowActions } from "@/components/admin/PostRowActions";
 
 interface Post {
   id: string;
@@ -27,7 +28,9 @@ export default async function AdminDashboard() {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Content Manager</h1>
-          <p className="text-muted-foreground mt-1">Manage your blog posts and articles</p>
+          <p className="text-muted-foreground mt-1">
+            Manage your blog posts and articles
+          </p>
         </div>
         <Link href="/admin/posts/new">
           <button className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-primary text-primary-foreground font-bold uppercase tracking-widest text-xs shadow-xl shadow-primary/20 hover:shadow-primary/40 transition-all duration-300">
@@ -43,27 +46,47 @@ export default async function AdminDashboard() {
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="border-b border-border/50 bg-muted/30">
-                <th className="px-6 py-4 text-xs font-bold uppercase tracking-widest text-muted-foreground">Post Details</th>
-                <th className="px-6 py-4 text-xs font-bold uppercase tracking-widest text-muted-foreground">Category</th>
-                <th className="px-6 py-4 text-xs font-bold uppercase tracking-widest text-muted-foreground">Status</th>
-                <th className="px-6 py-4 text-xs font-bold uppercase tracking-widest text-muted-foreground">Date</th>
-                <th className="px-6 py-4 text-xs font-bold uppercase tracking-widest text-muted-foreground text-right">Actions</th>
+                <th className="px-6 py-4 text-xs font-bold uppercase tracking-widest text-muted-foreground">
+                  Post Details
+                </th>
+                <th className="px-6 py-4 text-xs font-bold uppercase tracking-widest text-muted-foreground">
+                  Category
+                </th>
+                <th className="px-6 py-4 text-xs font-bold uppercase tracking-widest text-muted-foreground">
+                  Status
+                </th>
+                <th className="px-6 py-4 text-xs font-bold uppercase tracking-widest text-muted-foreground">
+                  Date
+                </th>
+                <th className="px-6 py-4 text-xs font-bold uppercase tracking-widest text-muted-foreground text-right">
+                  Actions
+                </th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border/50">
               {posts.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="px-6 py-20 text-center text-muted-foreground">
+                  <td
+                    colSpan={5}
+                    className="px-6 py-20 text-center text-muted-foreground"
+                  >
                     No posts found. Create your first post!
                   </td>
                 </tr>
               ) : (
                 posts.map((post: Post) => (
-                  <tr key={post.id} className="hover:bg-muted/10 transition-colors group">
+                  <tr
+                    key={post.id}
+                    className="hover:bg-muted/10 transition-colors group"
+                  >
                     <td className="px-6 py-6">
                       <div className="space-y-1">
-                        <p className="font-bold text-foreground line-clamp-1">{post.title}</p>
-                        <p className="text-xs text-muted-foreground">/{post.slug}</p>
+                        <p className="font-bold text-foreground line-clamp-1">
+                          {post.title}
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          /{post.slug}
+                        </p>
                       </div>
                     </td>
                     <td className="px-6 py-6">
@@ -85,24 +108,12 @@ export default async function AdminDashboard() {
                       )}
                     </td>
                     <td className="px-6 py-6">
-                      <p className="text-xs text-muted-foreground">{format(new Date(post.createdAt), "MMM d, yyyy")}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {format(new Date(post.createdAt), "MMM d, yyyy")}
+                      </p>
                     </td>
                     <td className="px-6 py-6 text-right">
-                      <div className="flex items-center justify-end gap-2">
-                        <Link href={`/blog/${post.slug}`} target="_blank">
-                          <button className="p-2 rounded-lg bg-muted text-muted-foreground hover:text-primary transition-colors border border-border/50" title="Preview">
-                            <ExternalLink size={16} />
-                          </button>
-                        </Link>
-                        <Link href={`/admin/posts/${post.id}`}>
-                          <button className="p-2 rounded-lg bg-muted text-muted-foreground hover:text-primary transition-colors border border-border/50" title="Edit">
-                            <Edit size={16} />
-                          </button>
-                        </Link>
-                        <button className="p-2 rounded-lg bg-muted text-muted-foreground hover:text-destructive transition-colors border border-border/50" title="Delete">
-                          <Trash2 size={16} />
-                        </button>
-                      </div>
+                      <PostRowActions postId={post.id} slug={post.slug} />
                     </td>
                   </tr>
                 ))

@@ -39,8 +39,8 @@ export function BlogCard({ post, index }: BlogCardProps) {
       whileHover={{ y: -8 }}
       className="group relative h-full"
     >
-      <Link href={`/blog/${post.slug}`} className="block h-full">
-        <div className="relative h-full rounded-3xl overflow-hidden glass border border-border/50 shadow-xl flex flex-col">
+       <Link href={`/blog/${post.slug}`} className="block h-full">
+        <div className="relative h-full rounded-3xl overflow-hidden bg-card border border-border/50 shadow-xl flex flex-col">
           {/* Image */}
           <div className="relative h-56 overflow-hidden bg-muted/20">
             {post.coverImage ? (
@@ -55,7 +55,7 @@ export function BlogCard({ post, index }: BlogCardProps) {
                 <Layers size={40} className="text-primary/20" />
               </div>
             )}
-            <div className="absolute top-4 left-4 px-3 py-1.5 rounded-full bg-black/40 text-white border border-white/10 backdrop-blur-md text-[10px] font-bold uppercase tracking-widest">
+            <div className="absolute top-4 left-4 px-3 py-1.5 rounded-full bg-muted/90 text-foreground border border-border text-[10px] font-bold uppercase tracking-widest">
               {post.category}
             </div>
             <div className="absolute inset-0 bg-linear-to-t from-black/60 to-transparent opacity-60 group-hover:opacity-40 transition-opacity" />

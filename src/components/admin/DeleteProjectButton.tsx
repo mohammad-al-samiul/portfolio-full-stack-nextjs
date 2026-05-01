@@ -4,44 +4,61 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Trash, Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { DeleteConfirmationDialog } from "./DeleteConfirmationDialog";
 
-export function DeleteProjectButton({ id }: { id: string }) {
-  const [loading, setLoading] = useState(false);
+interface DeleteProjectButtonProps {
+  id: string;
+  onDelete?: (id: string) => void;
+  disabled?: boolean;
+}
+
+export function DeleteProjectButton({ id, onDelete, disabled }: DeleteProjectButtonProps) {
+  const [dialogOpen, setDialogOpen] = useState(false);
   const router = useRouter();
 
-  const onDelete = async () => {
-    if (!confirm("Are you sure you want to delete this project?")) return;
+  const handleDelete = async () => {
+    if (onDelete) {
+      onDelete(id);
+    } else {
+      // Fallback to client-side delete if no onDelete handler provided
+      try {
+        const res = await fetch(`/api/projects/${id}`, {
+          method: "DELETE",
+        });
 
-    setLoading(true);
-    try {
-      const res = await fetch(`/api/projects/${id}`, {
-        method: "DELETE",
-      });
-
-      if (res.ok) {
-        toast.success("Project deleted");
-        router.refresh();
-      } else {
+        if (res.ok) {
+          toast.success("Project deleted successfully!");
+          router.refresh();
+        } else {
+          toast.error("Failed to delete project");
+        }
+      } catch (error) {
+        console.error(error);
         toast.error("Failed to delete project");
       }
-    } catch (error) {
-      toast.error("An error occurred");
-    } finally {
-      setLoading(false);
     }
+    setDialogOpen(false);
   };
 
   return (
-    <button
-      onClick={onDelete}
-      disabled={loading}
-      className="p-2.5 rounded-xl bg-white/5 border border-white/5 hover:bg-destructive/10 hover:text-destructive transition-all group/btn"
-    >
-      {loading ? (
-        <Loader2 className="animate-spin" size={18} />
-      ) : (
+    <>
+      <button
+        onClick={() => setDialogOpen(true)}
+        disabled={disabled}
+        className="p-2.5 rounded-xl bg-white/5 border border-white/5 hover:bg-destructive/10 hover:text-destructive transition-all group/btn disabled:opacity-50 disabled:hover:bg-white/5 disabled:hover:text-inherit"
+      >
         <Trash size={18} className="group-hover/btn:scale-110 transition-transform" />
-      )}
-    </button>
+      </button>
+
+      <DeleteConfirmationDialog
+        open={dialogOpen}
+        onOpenChange={setDialogOpen}
+        onConfirm={handleDelete}
+        title="Delete Project?"
+        description="Are you sure you want to delete this project? This action cannot be undone."
+        confirmText="Delete"
+        cancelText="Cancel"
+      />
+    </>
   );
 }

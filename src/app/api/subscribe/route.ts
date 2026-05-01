@@ -11,7 +11,10 @@ export async function POST(req: Request) {
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      return NextResponse.json({ error: "Please provide a valid email address" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Please provide a valid email address" },
+        { status: 400 },
+      );
     }
 
     // Attempting to access the newsletter model
@@ -21,20 +24,27 @@ export async function POST(req: Request) {
     });
 
     if (existingSubscriber) {
-      return NextResponse.json({ message: "You are already subscribed!" }, { status: 200 });
+      return NextResponse.json(
+        { message: "You are already subscribed!" },
+        { status: 200 },
+      );
     }
 
     await prisma.newsletter.create({
       data: { email },
     });
 
-    return NextResponse.json({ 
-      success: true, 
-      message: "Subscribed successfully!" 
-    }, { status: 201 });
-
+    return NextResponse.json(
+      {
+        success: true,
+        message: "Subscribed successfully!",
+      },
+      { status: 201 },
+    );
   } catch (error) {
     console.error("[SUBSCRIBE_API] Error:", error);
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    const message =
+      error instanceof Error ? error.message : "Database connection failed";
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }

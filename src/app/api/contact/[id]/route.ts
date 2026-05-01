@@ -4,12 +4,12 @@ import { auth } from "@/lib/auth";
 
 export async function DELETE(
   req: Request,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const session = await auth();
     if (!session) {
-      return new NextResponse("Unauthorized", { status: 401 });
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const { id } = await params;
@@ -19,6 +19,9 @@ export async function DELETE(
 
     return new NextResponse(null, { status: 204 });
   } catch (error) {
-    return new NextResponse(null, { status: 500 });
+    console.error("[CONTACT_DELETE]", error);
+    const message =
+      error instanceof Error ? error.message : "Failed to delete message";
+    return NextResponse.json({ message }, { status: 500 });
   }
 }

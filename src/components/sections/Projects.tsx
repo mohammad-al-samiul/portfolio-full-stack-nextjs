@@ -92,14 +92,14 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
       whileHover={{ y: -8 }}
       className="group relative h-full"
     >
-      <div
-        className={cn(
-          "relative h-full rounded-2xl overflow-hidden",
-          "bg-card border border-border glass",
-          "shadow-xl hover:shadow-2xl transition-all duration-500",
-          "flex flex-col",
-        )}
-      >
+        <div
+          className={cn(
+            "relative h-full rounded-2xl overflow-hidden",
+            "bg-card border border-border",
+            "shadow-xl hover:shadow-2xl transition-all duration-500",
+            "flex flex-col",
+          )}
+        >
         {/* Image container */}
         <div className="relative h-48 md:h-56 overflow-hidden bg-muted/20">
           <Image
@@ -109,21 +109,21 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
             className="object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
           />
 
-          {/* Featured badge */}
-          {project.featured && (
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={inView ? { opacity: 1, x: 0 } : {}}
-              transition={{ delay: index * 0.06 + 0.2 }}
-              className="absolute top-4 right-4 flex items-center gap-1.5 px-3 py-1.5 text-[10px] uppercase tracking-widest font-bold rounded-full bg-primary/20 text-primary border border-primary/30 backdrop-blur-md shadow-lg"
-            >
-              <Sparkles size={10} />
-              Featured
-            </motion.div>
-          )}
+            {/* Featured badge */}
+            {project.featured && (
+              <motion.div
+                initial={{ opacity: 0, x: 20 }}
+                animate={inView ? { opacity: 1, x: 0 } : {}}
+                transition={{ delay: index * 0.06 + 0.2 }}
+                className="absolute top-4 right-4 flex items-center gap-1.5 px-3 py-1.5 text-[10px] uppercase tracking-widest font-bold rounded-full bg-primary/20 text-primary border border-primary/30 shadow-lg"
+              >
+                <Sparkles size={10} />
+                Featured
+              </motion.div>
+            )}
 
-          {/* Category badge */}
-          <div className="absolute top-4 left-4 flex items-center gap-1.5 px-3 py-1.5 text-[10px] uppercase tracking-widest font-bold rounded-full bg-black/40 text-white border border-white/10 backdrop-blur-md">
+           {/* Category badge */}
+          <div className="absolute top-4 left-4 flex items-center gap-1.5 px-3 py-1.5 text-[10px] uppercase tracking-widest font-bold rounded-full bg-muted/90 text-foreground border border-border">
             {project.category}
           </div>
 

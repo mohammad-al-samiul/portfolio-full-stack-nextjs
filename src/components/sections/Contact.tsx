@@ -152,7 +152,7 @@ export function Contact() {
               initial={{ opacity: 0, x: 20 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
-              className="glass p-8 md:p-10 rounded-[2.5rem] shadow-2xl relative"
+               className="p-8 md:p-10 rounded-[2.5rem] bg-background border border-border/50 shadow-xl relative"
             >
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="space-y-2">

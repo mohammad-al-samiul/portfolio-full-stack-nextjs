@@ -80,7 +80,7 @@ function TimelineCard({
         <motion.div
           initial={{ scale: 0, opacity: 0 }}
           animate={inView ? { scale: 1, opacity: 1 } : {}}
-          className="relative z-10 flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-primary/40 to-primary/20 border border-primary/80 shadow-lg shadow-primary/20 backdrop-blur-sm"
+           className="relative z-10 flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-primary/40 to-primary/20 border border-primary/80 shadow-lg shadow-primary/20"
         >
           <div className="h-5 w-5 rounded-full bg-gradient-to-br from-primary to-primary/80" />
         </motion.div>
@@ -109,7 +109,7 @@ function TimelineCard({
           "flex-1 relative group",
           "rounded-2xl p-6 md:p-8",
           "bg-linear-to-br from-card/80 via-card to-card/60",
-          "border border-primary/30 backdrop-blur-xl",
+           "border border-primary/30",
           "shadow-xl shadow-primary/5 hover:shadow-2xl hover:shadow-primary/15",
           "transition-all duration-500",
         )}
@@ -120,7 +120,7 @@ function TimelineCard({
             initial={{ opacity: 0, scale: 0.8 }}
             animate={inView ? { opacity: 1, scale: 1 } : {}}
             transition={{ delay: 0.3, type: "spring", stiffness: 300 }}
-            className="absolute -top-3 right-6 flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-full bg-gradient-to-r from-primary to-primary/80 text-primary-foreground border border-primary/50 backdrop-blur-sm shadow-lg shadow-primary/30 z-20"
+             className="absolute -top-3 right-6 flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-full bg-gradient-to-r from-primary to-primary/80 text-primary-foreground border border-primary/50 shadow-lg shadow-primary/30 z-20"
           >
             <motion.div
               animate={{ y: [0, -2, 0] }}

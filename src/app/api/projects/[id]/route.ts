@@ -18,7 +18,7 @@ const projectSchema = z.object({
 
 export async function PATCH(
   req: Request,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const session = await auth();
@@ -37,17 +37,23 @@ export async function PATCH(
 
     return NextResponse.json(project);
   } catch (error) {
+    console.error("[PROJECTS_PATCH]", error);
     if (error instanceof z.ZodError) {
-      return new NextResponse(JSON.stringify({ message: "Validation Error", errors: error.issues }), { status: 422 });
+      return NextResponse.json(
+        { message: "Validation Error", errors: error.issues },
+        { status: 422 },
+      );
     }
 
-    return new NextResponse(JSON.stringify({ message: "Internal Server Error" }), { status: 500 });
+    const message =
+      error instanceof Error ? error.message : "Internal Server Error";
+    return NextResponse.json({ message }, { status: 500 });
   }
 }
 
 export async function DELETE(
   req: Request,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const session = await auth();
@@ -62,13 +68,16 @@ export async function DELETE(
 
     return new NextResponse(null, { status: 204 });
   } catch (error) {
-    return new NextResponse(null, { status: 500 });
+    console.error("[PROJECTS_DELETE]", error);
+    const message =
+      error instanceof Error ? error.message : "Failed to delete project";
+    return NextResponse.json({ message }, { status: 500 });
   }
 }
 
 export async function GET(
   req: Request,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const { id } = await params;
@@ -77,11 +86,14 @@ export async function GET(
     });
 
     if (!project) {
-      return new NextResponse("Not Found", { status: 404 });
+      return NextResponse.json({ error: "Project not found" }, { status: 404 });
     }
 
     return NextResponse.json(project);
   } catch (error) {
-    return new NextResponse(null, { status: 500 });
+    console.error("[PROJECTS_GET]", error);
+    const message =
+      error instanceof Error ? error.message : "Failed to fetch project";
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }

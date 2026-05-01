@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useRef, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
 import { useRouter } from "next/navigation";
-import { toast } from "sonner";
+import { useCreatePost, useUpdatePost } from "@/hooks/usePosts";
 
 import { cn } from "@/lib/utils";
 import {
@@ -13,6 +13,7 @@ import {
   FileText,
 } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import dynamic from "next/dynamic";
 import "easymde/dist/easymde.min.css";
 
@@ -22,75 +23,78 @@ const SimpleMDE = dynamic(() => import("react-simplemde-editor"), {
 });
 
 interface PostFormProps {
-  initialData?: any;
+  initialData?: Record<string, unknown>;
+}
+
+interface FormDataType {
+  title: string;
+  slug: string;
+  excerpt: string;
+  content: string;
+  category: string;
+  coverImage: string;
+  tags: string;
+  published: boolean;
 }
 
 export function PostForm({ initialData }: PostFormProps) {
-  const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const createPost = useCreatePost();
+  const updatePost = useUpdatePost();
 
-  const [formData, setFormData] = useState({
-    title: initialData?.title || "",
-    slug: initialData?.slug || "",
-    excerpt: initialData?.excerpt || "",
-    content: initialData?.content || "",
-    category: initialData?.category || "Frontend",
-    coverImage: initialData?.coverImage || "",
-    tags: initialData?.tags?.join(", ") || "",
-    published: initialData?.published || false,
+  const [formData, setFormData] = useState<FormDataType>({
+    title: (initialData?.title as string) || "",
+    slug: (initialData?.slug as string) || "",
+    excerpt: (initialData?.excerpt as string) || "",
+    content: (initialData?.content as string) || "",
+    category: (initialData?.category as string) || "Frontend",
+    coverImage: (initialData?.coverImage as string) || "",
+    tags: ((initialData?.tags as string[])?.join(", ")) || "",
+    published: (initialData?.published as boolean) || false,
   });
 
-  // Use ref to prevent unnecessary re-renders of SimpleMDE
-  const contentRef = useRef(formData.content);
+  const simpleMdeOptions = useMemo(() => ({
+    spellChecker: false,
+    autofocus: false,
+    placeholder: "Write your amazing content here...",
+    minHeight: "400px",
+  }), []);
 
   const handleContentChange = useCallback((value: string) => {
-    contentRef.current = value;
-  }, []);
-
-  // Sync content to formData on blur or before submit
-  const syncContentToFormData = useCallback(() => {
     setFormData((prev) => ({
       ...prev,
-      content: contentRef.current,
+      content: value,
     }));
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    syncContentToFormData();
-    setLoading(true);
 
     const payload = {
       ...formData,
-      content: contentRef.current,
       tags: formData.tags
         .split(",")
         .map((t: string) => t.trim())
         .filter(Boolean),
     };
 
-    try {
-      const url = initialData?.id
-        ? `/api/posts/${initialData.id}`
-        : "/api/posts";
-      const method = initialData?.id ? "PATCH" : "POST";
-
-      const res = await fetch(url, {
-        method,
-        body: JSON.stringify(payload),
-        headers: { "Content-Type": "application/json" },
+    if (initialData?.id) {
+      updatePost.mutate(
+        { id: initialData.id as string, data: payload },
+        {
+          onSuccess: () => {
+            router.push("/admin/posts");
+            router.refresh();
+          },
+        },
+      );
+    } else {
+      createPost.mutate(payload, {
+        onSuccess: () => {
+          router.push("/admin/posts");
+          router.refresh();
+        },
       });
-
-      if (res.ok) {
-        toast.success(initialData?.id ? "Post updated successfully!" : "Post created successfully!");
-        router.push("/admin/posts");
-        router.refresh();
-      }
-    } catch (error) {
-      console.error("Failed to save post", error);
-      toast.error("Failed to save post");
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -127,10 +131,10 @@ export function PostForm({ initialData }: PostFormProps) {
           </button>
           <button
             type="submit"
-            disabled={loading}
+            disabled={createPost.isPending || updatePost.isPending}
             className="flex items-center gap-2 px-6 py-3 rounded-xl bg-primary text-primary-foreground font-bold uppercase tracking-widest text-xs shadow-xl shadow-primary/20 hover:shadow-primary/40 transition-all duration-300 disabled:opacity-70"
           >
-            {loading ? (
+            {createPost.isPending || updatePost.isPending ? (
               <Loader2 className="animate-spin" size={18} />
             ) : (
               <Save size={18} />
@@ -193,14 +197,9 @@ export function PostForm({ initialData }: PostFormProps) {
               Content (Markdown)
             </label>
             <SimpleMDE
-              value={contentRef.current}
+              value={formData.content}
               onChange={handleContentChange}
-              options={{
-                spellChecker: false,
-                autofocus: false,
-                placeholder: "Write your amazing content here...",
-                minHeight: "400px",
-              }}
+              options={simpleMdeOptions}
             />
           </div>
         </div>
@@ -208,28 +207,38 @@ export function PostForm({ initialData }: PostFormProps) {
         {/* Sidebar */}
         <div className="lg:col-span-4 space-y-8">
           <div className="p-6 rounded-3xl bg-card border border-border/50 shadow-xl space-y-6">
-             <div className="space-y-4">
-               <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground ml-1 block">
-                 Category
-               </label>
-               <div className="relative">
-                 <select
-                   value={formData.category}
-                   onChange={(e) =>
-                     setFormData({ ...formData, category: e.target.value })
-                   }
-                   className="w-full p-3 rounded-xl bg-muted/50 border border-border focus:border-primary/50 focus:ring-0 transition-all outline-none appearance-none cursor-pointer hover:bg-muted/70 peer"
-                 >
-                   <option value="Frontend">Frontend</option>
-                   <option value="Backend">Backend</option>
-                   <option value="Fullstack">Fullstack</option>
-                   <option value="DevOps">DevOps</option>
-                   <option value="AI">AI</option>
-                 </select>
-                 <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none transition-transform peer-focus:rotate-180">
-                   <svg className="w-4 h-4 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                   </svg>
+            <div className="space-y-4">
+              <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground ml-1 block">
+                Category
+              </label>
+              <div className="relative">
+                <select
+                  value={formData.category}
+                  onChange={(e) =>
+                    setFormData({ ...formData, category: e.target.value })
+                  }
+                  className="w-full p-3 rounded-xl bg-muted/50 border border-border focus:border-primary/50 focus:ring-0 transition-all outline-none appearance-none cursor-pointer hover:bg-muted/70 peer"
+                >
+                  <option value="Frontend">Frontend</option>
+                  <option value="Backend">Backend</option>
+                  <option value="Fullstack">Fullstack</option>
+                  <option value="DevOps">DevOps</option>
+                  <option value="AI">AI</option>
+                </select>
+                <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none transition-transform peer-focus:rotate-180">
+                  <svg
+                    className="w-4 h-4 text-muted-foreground"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
                 </div>
               </div>
             </div>
@@ -255,10 +264,12 @@ export function PostForm({ initialData }: PostFormProps) {
               </div>
               {formData.coverImage && (
                 <div className="relative aspect-video rounded-xl overflow-hidden border border-border">
-                  <img
+                  <Image
                     src={formData.coverImage}
                     alt="Cover preview"
-                    className="object-cover w-full h-full"
+                    fill
+                    className="object-cover"
+                    unoptimized
                   />
                 </div>
               )}

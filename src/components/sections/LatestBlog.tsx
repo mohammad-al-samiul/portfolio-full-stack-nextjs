@@ -4,7 +4,8 @@ import { useRef } from "react";
 import Link from "next/link";
 import { motion, useInView } from "framer-motion";
 import { ArrowRight, BookOpen } from "lucide-react";
-import { BlogCard, Post } from "@/components/ui/BlogCard";
+import { BlogCard } from "@/components/ui/BlogCard";
+import { Post } from "@/lib/types";
 
 interface LatestBlogProps {
   posts: Post[];

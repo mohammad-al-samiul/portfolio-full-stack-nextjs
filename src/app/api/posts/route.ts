@@ -3,6 +3,8 @@ import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { z } from "zod";
 
+import { revalidatePath } from "next/cache";
+
 const postSchema = z.object({
   title: z.string().min(1),
   slug: z.string().min(1),
@@ -29,6 +31,8 @@ export async function POST(req: Request) {
         ...body,
       },
     });
+
+    revalidatePath("/blog");
 
     return NextResponse.json(post);
   } catch (error) {

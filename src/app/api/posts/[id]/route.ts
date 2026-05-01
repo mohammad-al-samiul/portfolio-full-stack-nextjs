@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { z } from "zod";
+import { revalidatePath } from "next/cache";
 
 const postSchema = z.object({
   title: z.string().min(1).optional(),
@@ -33,6 +34,9 @@ export async function PATCH(
       data: body,
     });
 
+    revalidatePath("/blog");
+    revalidatePath(`/blog/${post.slug}`);
+
     return NextResponse.json(post);
   } catch (error) {
     console.error("[POSTS_PATCH]", error);
@@ -60,9 +64,21 @@ export async function DELETE(
     }
 
     const { id } = await params;
+
+    // Get post slug before deleting for revalidation
+    const post = await prisma.post.findUnique({
+      where: { id },
+      select: { slug: true },
+    });
+
     await prisma.post.delete({
       where: { id },
     });
+
+    revalidatePath("/blog");
+    if (post) {
+      revalidatePath(`/blog/${post.slug}`);
+    }
 
     return new NextResponse(null, { status: 204 });
   } catch (error) {

@@ -6,18 +6,7 @@ import { Experience } from "@/components/sections/Experience";
 import { Projects } from "@/components/sections/Projects";
 import { LatestBlog } from "@/components/sections/LatestBlog";
 import { Contact } from "@/components/sections/Contact";
-
-interface Post {
-  id: string;
-  slug: string;
-  title: string;
-  excerpt: string;
-  content: string;
-  coverImage: string | null;
-  category: string;
-  tags: string[];
-  createdAt: Date;
-}
+import { Post } from "@/lib/types";
 
 export default async function Home() {
   // Fetch latest 3 published blog posts
@@ -32,16 +21,6 @@ export default async function Home() {
     console.error("Home page: Failed to fetch blog posts", error);
   }
 
-  // Fetch projects
-  let projects: any[] = [];
-  try {
-    projects = await prisma.project.findMany({
-      orderBy: { createdAt: "desc" },
-    });
-  } catch (error) {
-    console.error("Home page: Failed to fetch projects", error);
-  }
-
   return (
     <div className="flex flex-col w-full">
       <Hero />
@@ -52,7 +31,7 @@ export default async function Home() {
 
       <Experience />
 
-      <Projects initialProjects={projects} />
+      <Projects />
 
       {/* Shared Data Source: Fetching directly from Prisma */}
       <LatestBlog posts={posts} />

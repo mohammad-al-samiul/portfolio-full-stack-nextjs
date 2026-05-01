@@ -3,7 +3,11 @@
 import { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
-import { BlogCard, Post } from "@/components/ui/BlogCard";
+import { BlogCard } from "@/components/ui/BlogCard";
+import { Post } from "@/lib/types";
+import { BlogSkeleton } from "@/components/ui/BlogSkeleton";
+import { usePosts } from "@/hooks/usePosts";
+import { ShareModal } from "@/components/blog/ShareModal";
 
 const categories = ["All", "Frontend", "Backend", "Fullstack", "DevOps", "AI"] as const;
 type Category = (typeof categories)[number];
@@ -51,13 +55,31 @@ function BlogTab({
   );
 }
 
-export function BlogListingClient({ initialPosts }: { initialPosts: Post[] }) {
+export function BlogListingClient() {
   const [activeCategory, setActiveCategory] = useState<Category>("All");
+  const [shareModalOpen, setShareModalOpen] = useState(false);
+  const [selectedPost, setSelectedPost] = useState<Post | null>(null);
+  const { data: posts = [], isLoading, error } = usePosts();
+
+  const handleShare = (post: Post) => {
+    setSelectedPost(post);
+    setShareModalOpen(true);
+  };
 
   const filteredPosts = useMemo(() => {
-    if (activeCategory === "All") return initialPosts;
-    return initialPosts.filter((p) => p.category === activeCategory);
-  }, [activeCategory, initialPosts]);
+    if (activeCategory === "All") return posts;
+    return posts.filter((p) => p.category === activeCategory);
+  }, [activeCategory, posts]);
+
+  if (error) {
+    return (
+      <div className="container mx-auto px-4 md:px-6 py-12">
+        <div className="text-center py-24">
+          <p className="text-destructive">Failed to load articles. Please try again.</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto px-4 md:px-6 py-12">
@@ -80,19 +102,32 @@ export function BlogListingClient({ initialPosts }: { initialPosts: Post[] }) {
       {/* Grid */}
       <motion.div
         layout
-        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-16"
       >
         <AnimatePresence mode="popLayout">
-          {filteredPosts.map((post, index) => (
-            <BlogCard key={post.id} post={post} index={index} />
-          ))}
+          {isLoading
+            ? Array.from({ length: 6 }).map((_, index) => (
+                <BlogSkeleton key={`skeleton-${index}`} index={index} />
+              ))
+            : filteredPosts.map((post, index) => (
+                <BlogCard
+                  key={post.id}
+                  post={post}
+                  index={index}
+                  onShare={handleShare}
+                />
+              ))
+          }
         </AnimatePresence>
       </motion.div>
 
-      {filteredPosts.length === 0 && (
-        <div className="text-center py-24">
-          <p className="text-muted-foreground">No articles found in this category.</p>
-        </div>
+      {selectedPost && (
+        <ShareModal
+          isOpen={shareModalOpen}
+          onClose={() => setShareModalOpen(false)}
+          slug={selectedPost.slug}
+          title={selectedPost.title}
+        />
       )}
     </div>
   );

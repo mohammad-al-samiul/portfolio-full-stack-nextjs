@@ -1,27 +1,23 @@
+"use client";
+
 import Link from "next/link";
-import { prisma } from "@/lib/prisma";
 import { Plus } from "lucide-react";
 import { format } from "date-fns";
-import { auth } from "@/lib/auth";
-import { redirect } from "next/navigation";
+import { usePosts } from "@/hooks/usePosts";
 import { PostRowActions } from "@/components/admin/PostRowActions";
 
-interface Post {
-  id: string;
-  title: string;
-  slug: string;
-  category: string;
-  published: boolean;
-  createdAt: Date;
-}
+export default function AdminDashboard() {
+  const { data: posts = [], error } = usePosts();
 
-export default async function AdminDashboard() {
-  const session = await auth();
-  if (!session) redirect("/admin/login");
-
-  const posts = await prisma.post.findMany({
-    orderBy: { createdAt: "desc" },
-  });
+  if (error) {
+    return (
+      <div className="p-6 md:p-10 max-w-7xl mx-auto space-y-10">
+        <div className="text-center py-24">
+          <p className="text-destructive">Failed to load posts</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="p-6 md:p-10 max-w-7xl mx-auto space-y-10">
@@ -74,7 +70,7 @@ export default async function AdminDashboard() {
                   </td>
                 </tr>
               ) : (
-                posts.map((post: Post) => (
+                posts.map((post) => (
                   <tr
                     key={post.id}
                     className="hover:bg-muted/10 transition-colors group"

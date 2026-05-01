@@ -15,7 +15,7 @@ const socialLinks = [
   },
   {
     name: "LinkedIn",
-    url: "https://www.linkedin.com/in/al-samiul-dev/",
+    url: "https://www.linkedin.com/in/al-samiul-dev",
     icon: FaLinkedin,
     color: "hover:text-[#0a66c2] dark:hover:text-[#4298e1]",
     shadow: "hover:shadow-[#0a66c2]/20 dark:hover:shadow-[#4298e1]/20",

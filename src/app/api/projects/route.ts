@@ -74,19 +74,20 @@ export async function GET() {
     const projects = await prisma.project.findMany({
       where: { published: true },
       orderBy: { createdAt: "desc" },
-      select: {
-        id: true,
-        slug: true,
-        title: true,
-        description: true,
-        techStack: true,
-        coverImage: true,
-        liveUrl: true,
-        githubUrl: true,
-        featured: true,
-        createdAt: true,
-        updatedAt: true,
-      },
+    select: {
+      id: true,
+      slug: true,
+      title: true,
+      description: true,
+      techStack: true,
+      coverImage: true,
+      liveUrl: true,
+      githubUrl: true,
+      featured: true,
+      published: true,
+      createdAt: true,
+      updatedAt: true,
+    },
     });
 
     return NextResponse.json(projects);

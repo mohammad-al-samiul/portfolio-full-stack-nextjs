@@ -1,10 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { ExternalLink, Edit, Trash2, Loader2 } from "lucide-react";
-import { toast } from "sonner";
+import { useDeletePost } from "@/hooks/usePosts";
+import { DeleteConfirmationDialog } from "./DeleteConfirmationDialog";
 
 interface PostRowActionsProps {
   postId: string;
@@ -12,34 +12,17 @@ interface PostRowActionsProps {
 }
 
 export function PostRowActions({ postId, slug }: PostRowActionsProps) {
-  const [isDeleting, setIsDeleting] = useState(false);
-  const router = useRouter();
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const deletePost = useDeletePost();
 
   const handleDelete = async () => {
-    if (!confirm("Are you sure you want to delete this post?")) return;
-
-    setIsDeleting(true);
-    try {
-      const res = await fetch(`/api/posts/${postId}`, {
-        method: "DELETE",
-      });
-
-      if (res.ok) {
-        toast.success("Post deleted successfully!");
-        router.refresh();
-      } else {
-        toast.error("Failed to delete post");
-      }
-    } catch (error) {
-      console.error("Failed to delete post", error);
-      toast.error("Failed to delete post");
-    } finally {
-      setIsDeleting(false);
-    }
+    deletePost.mutate(postId);
+    setDialogOpen(false);
   };
 
   return (
-    <div className="flex items-center justify-end gap-2">
+    <>
+      <div className="flex items-center justify-end gap-2">
       <Link href={`/blog/${slug}`} target="_blank">
         <button
           className="p-2 rounded-lg bg-muted text-muted-foreground hover:text-primary transition-colors border border-border/50"
@@ -57,17 +40,29 @@ export function PostRowActions({ postId, slug }: PostRowActionsProps) {
         </button>
       </Link>
       <button
-        onClick={handleDelete}
-        disabled={isDeleting}
+        onClick={() => setDialogOpen(true)}
+        disabled={deletePost.isPending}
         className="p-2 rounded-lg bg-muted text-muted-foreground hover:text-destructive transition-colors border border-border/50 disabled:opacity-50"
         title="Delete"
       >
-        {isDeleting ? (
+        {deletePost.isPending ? (
           <Loader2 size={16} className="animate-spin" />
         ) : (
           <Trash2 size={16} />
         )}
       </button>
     </div>
-  );
+
+    <DeleteConfirmationDialog
+      open={dialogOpen}
+      onOpenChange={setDialogOpen}
+      onConfirm={handleDelete}
+      title="Delete Post?"
+      description="Are you sure you want to delete this post? This action cannot be undone."
+      confirmText="Delete"
+      cancelText="Cancel"
+      isDeleting={deletePost.isPending}
+    />
+  </>
+);
 }

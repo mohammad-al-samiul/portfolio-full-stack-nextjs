@@ -1,18 +1,13 @@
 "use client";
 
 import { useRef, useState, useMemo } from "react";
-import Link from "next/link";
-import Image from "next/image";
 import { motion, useInView, AnimatePresence } from "framer-motion";
+import { useProjects } from "@/hooks/useProjects";
+import { Project } from "@/lib/types";
+import { ProjectCard } from "@/components/ui/ProjectCard";
+import { ProjectSkeleton } from "@/components/ui/ProjectSkeleton";
+import { GitBranch, Layers } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { projects, Project } from "@/data/projects";
-import {
-  ExternalLink,
-  GitBranch,
-  Sparkles,
-  ArrowRight,
-  Layers,
-} from "lucide-react";
 
 // ─── ProjectTab ─────────────────────────────────────────────────────────────
 
@@ -70,200 +65,48 @@ function ProjectTab({
   );
 }
 
-// ─── ProjectCard ──────────────────────────────────────────────────────────────
-
-function ProjectCard({ project, index }: { project: Project; index: number }) {
-  const ref = useRef<HTMLDivElement>(null);
-  const inView = useInView(ref, { once: true, margin: "-100px" });
-
-  return (
-    <motion.div
-      ref={ref}
-      layout
-      // Animation: Enter from LEFT (-30px), fade in, scale slightly
-      initial={{ opacity: 0, x: -30, scale: 0.95 }}
-      animate={inView ? { opacity: 1, x: 0, scale: 1 } : {}}
-      exit={{ opacity: 0, x: 30, scale: 0.9, transition: { duration: 0.2 } }}
-      transition={{
-        duration: 0.4,
-        ease: [0.22, 1, 0.36, 1] as any,
-        delay: index * 0.06, // Smooth stagger
-      }}
-      whileHover={{ y: -8 }}
-      className="group relative h-full"
-    >
-      <div
-        className={cn(
-          "relative h-full rounded-2xl overflow-hidden",
-          "bg-card border border-border",
-          "shadow-xl hover:shadow-2xl transition-all duration-500",
-          "flex flex-col",
-        )}
-      >
-        {/* Image container */}
-        <div className="relative h-48 md:h-56 overflow-hidden bg-muted/20">
-          <Image
-            src={project.image}
-            alt={project.title}
-            fill
-            className="object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
-          />
-
-          {/* Featured badge */}
-          {project.featured && (
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={inView ? { opacity: 1, x: 0 } : {}}
-              transition={{ delay: index * 0.06 + 0.2 }}
-              className="absolute top-4 right-4 flex items-center gap-1.5 px-3 py-1.5 text-[10px] uppercase tracking-widest font-bold rounded-full bg-primary/20 text-primary border border-primary/30 shadow-lg"
-            >
-              <Sparkles size={10} />
-              Featured
-            </motion.div>
-          )}
-
-          {/* Category badge */}
-          <div className="absolute top-4 left-4 flex items-center gap-1.5 px-3 py-1.5 text-[10px] uppercase tracking-widest font-bold rounded-full bg-muted/90 text-foreground border border-border">
-            {project.category}
-          </div>
-
-          {/* Image overlay gradient */}
-          <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/20 to-transparent opacity-60 group-hover:opacity-40 transition-opacity duration-500" />
-        </div>
-
-        {/* Content */}
-        <div className="relative flex-1 p-6 md:p-8 flex flex-col gap-4">
-          {/* Title and description */}
-          <div className="space-y-3">
-            <h3 className="text-xl md:text-2xl font-bold text-foreground group-hover:text-primary transition-colors duration-300">
-              {project.title}
-            </h3>
-            <p className="text-sm text-muted-foreground line-clamp-2 leading-relaxed">
-              {project.shortDescription}
-            </p>
-          </div>
-
-          {/* Tech stack */}
-          <div className="flex flex-wrap gap-2 mt-auto">
-            {project.techStack.slice(0, 3).map((tech, i) => (
-              <span
-                key={i}
-                className="inline-flex items-center gap-1 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider rounded-md bg-primary/5 text-primary/70 border border-primary/10"
-              >
-                {tech}
-              </span>
-            ))}
-            {project.techStack.length > 3 && (
-              <span className="inline-flex items-center px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider rounded-md bg-muted/50 text-muted-foreground border border-border/50">
-                +{project.techStack.length - 3}
-              </span>
-            )}
-          </div>
-
-          {/* Links and button */}
-          <div className="pt-6 mt-2 border-t border-border/50 flex items-center justify-between gap-3">
-            <div className="flex items-center gap-2">
-              {project.liveLink && (
-                <motion.a
-                  href={project.liveLink}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  whileHover={{
-                    scale: 1.1,
-                    backgroundColor: "rgba(var(--primary), 0.2)",
-                  }}
-                  whileTap={{ scale: 0.95 }}
-                  className="p-2 rounded-lg bg-muted/30 text-muted-foreground hover:text-primary transition-colors duration-300"
-                  title="View Live"
-                >
-                  <ExternalLink size={18} />
-                </motion.a>
-              )}
-              {project.githubLink && (
-                <motion.a
-                  href={project.githubLink}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  whileHover={{
-                    scale: 1.1,
-                    backgroundColor: "rgba(var(--primary), 0.2)",
-                  }}
-                  whileTap={{ scale: 0.95 }}
-                  className="p-2 rounded-lg bg-muted/30 text-muted-foreground hover:text-primary transition-colors duration-300"
-                  title="View GitHub"
-                >
-                  <GitBranch size={18} />
-                </motion.a>
-              )}
-            </div>
-
-            <Link href={`/projects/${project.slug}`}>
-              <motion.div
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary text-primary-foreground font-bold text-xs uppercase tracking-widest shadow-lg shadow-primary/20 hover:shadow-primary/40 transition-all duration-300"
-              >
-                Details
-                <ArrowRight size={14} />
-              </motion.div>
-            </Link>
-          </div>
-        </div>
-
-        {/* Premium Hover Effects */}
-        {/* Gradient glow */}
-        <div className="absolute inset-0 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-radial-gradient from-primary/10 via-transparent to-transparent" />
-
-        {/* Animated border glow */}
-        <motion.div className="absolute inset-0 rounded-2xl border-2 border-primary/0 group-hover:border-primary/20 transition-colors duration-500 pointer-events-none" />
-      </div>
-    </motion.div>
-  );
-}
-
 // ─── Main Component ───────────────────────────────────────────────────────────
 
 const categories = ["All", "Frontend", "Backend", "Fullstack"] as const;
 type Category = (typeof categories)[number];
 
-export function Projects({
-  initialProjects = [],
-}: {
-  initialProjects?: any[];
-}) {
+type ExtendedProject = Project & { category: Category };
+
+export function Projects() {
   const [activeCategory, setActiveCategory] = useState<Category>("All");
+  const { data: projects = [], isLoading, error } = useProjects();
+
+  console.log(projects);
 
   const headingRef = useRef<HTMLDivElement>(null);
   const headingInView = useInView(headingRef, { once: true, margin: "-60px" });
 
-  const fetchedProjects: Project[] = useMemo(() => {
-    return initialProjects.map((p: any) => ({
-      id: p.id,
-      slug: p.slug,
-      title: p.title,
-      shortDescription: p.description || "",
-      fullDescription: p.content || "",
-      image:
-        p.coverImage ||
-        "https://images.unsplash.com/photo-1557821552-17105176677c?w=500&h=300&fit=crop",
-      techStack: p.techStack || [],
-      liveLink: p.liveUrl,
-      githubLink: p.githubUrl,
-      challenges: [] as string[],
-      futureImprovements: [] as string[],
-      featured: p.featured,
-      category: "Fullstack" as const,
-    }));
-  }, [initialProjects]);
+  const fetchedProjects: ExtendedProject[] = useMemo(() => {
+    return projects
+      .filter((p) => p.published)
+      .map((p) => ({
+        ...p,
+        shortDescription: p.description || "",
+        fullDescription: p.content || "",
+        image:
+          p.coverImage ||
+          "https://images.unsplash.com/photo-1557821552-17105176677c?w=500&h=300&fit=crop",
+        techStack: p.techStack || [],
+        liveLink: p.liveUrl,
+        githubLink: p.githubUrl,
+        challenges: [] as string[],
+        futureImprovements: [] as string[],
+        featured: p.featured,
+        published: p.published,
+        category: "Fullstack" as const,
+      }));
+  }, [projects]);
 
   const filteredProjects = useMemo(() => {
-    // Use fetched projects, but if empty, can fallback to static projects
-    const dataToFilter =
-      fetchedProjects.length > 0 ? fetchedProjects : projects;
-
-    if (activeCategory === "All") return dataToFilter;
-    return dataToFilter.filter((p) => p.category === activeCategory);
+    if (activeCategory === "All") return fetchedProjects;
+    return fetchedProjects.filter((p) => p.category === activeCategory);
   }, [activeCategory, fetchedProjects]);
+  console.log({ filteredProjects });
 
   return (
     <section
@@ -356,12 +199,23 @@ export function Projects({
         {/* Projects Grid */}
         <motion.div
           layout
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-16"
         >
           <AnimatePresence mode="popLayout">
-            {filteredProjects.map((project, index) => (
-              <ProjectCard key={project.id} project={project} index={index} />
-            ))}
+            {isLoading
+              ? Array.from({ length: 6 }).map((_, index) => (
+                  <ProjectSkeleton key={`skeleton-${index}`} index={index} />
+                ))
+              : error
+              ? (
+                  <div className="col-span-full text-center py-12">
+                    <p className="text-destructive">Failed to load projects. Please try again.</p>
+                  </div>
+                )
+              : filteredProjects.map((project, index) => (
+                  <ProjectCard key={project.id} project={project} index={index} />
+                ))
+            }
           </AnimatePresence>
         </motion.div>
 

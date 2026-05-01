@@ -2,22 +2,17 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { 
+import {
   HiOutlineEnvelope,
   HiOutlinePhone,
   HiOutlineChatBubbleLeftRight,
-  HiOutlinePaperAirplane
+  HiOutlinePaperAirplane,
 } from "react-icons/hi2";
-import { 
-  AiOutlineLoading3Quarters 
-} from "react-icons/ai";
-import { 
-  FaGithub, 
-  FaLinkedinIn, 
-  FaTwitter 
-} from "react-icons/fa6";
+import { AiOutlineLoading3Quarters } from "react-icons/ai";
+import { FaGithub, FaLinkedinIn, FaTwitter } from "react-icons/fa6";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { FaFacebook } from "react-icons/fa";
 
 export function Contact() {
   const [loading, setLoading] = useState(false);
@@ -45,7 +40,9 @@ export function Contact() {
         toast.success("Message sent! I'll get back to you soon.");
         setFormData({ name: "", email: "", message: "" });
       } else {
-        const errorData = await res.json().catch(() => ({ error: "Something went wrong" }));
+        const errorData = await res
+          .json()
+          .catch(() => ({ error: "Something went wrong" }));
         console.error("Form submission failed:", errorData);
         toast.error(errorData.error || "Failed to send message");
       }
@@ -91,16 +88,21 @@ export function Contact() {
                 className="space-y-4"
               >
                 <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20">
-                  <HiOutlineChatBubbleLeftRight size={14} className="text-primary" />
+                  <HiOutlineChatBubbleLeftRight
+                    size={14}
+                    className="text-primary"
+                  />
                   <span className="text-[10px] font-bold uppercase tracking-widest text-primary">
                     Get in touch
                   </span>
                 </div>
                 <h2 className="text-4xl md:text-5xl font-bold tracking-tight">
-                  Let's discuss your <span className="text-primary">next big idea.</span>
+                  Let&apos;s discuss your{" "}
+                  <span className="text-primary">next big idea.</span>
                 </h2>
                 <p className="text-muted-foreground text-lg max-w-md">
-                  Whether you have a specific project in mind or just want to say hi, my inbox is always open.
+                  Whether you have a specific project in mind or just want to
+                  say hi, my inbox is always open.
                 </p>
               </motion.div>
 
@@ -119,7 +121,9 @@ export function Contact() {
                       {info.icon}
                     </div>
                     <div>
-                      <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-1">{info.label}</p>
+                      <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-1">
+                        {info.label}
+                      </p>
                       <p className="text-lg font-semibold">{info.value}</p>
                     </div>
                   </motion.a>
@@ -128,9 +132,18 @@ export function Contact() {
 
               <div className="flex gap-4">
                 {[
-                  { icon: <FaGithub size={20} />, href: "#" },
-                  { icon: <FaLinkedinIn size={20} />, href: "#" },
-                  { icon: <FaTwitter size={20} />, href: "#" },
+                  {
+                    icon: <FaGithub size={20} />,
+                    href: "https://github.com/mohammad-al-samiul",
+                  },
+                  {
+                    icon: <FaLinkedinIn size={20} />,
+                    href: "https://www.linkedin.com/in/al-samiul-dev",
+                  },
+                  {
+                    icon: <FaFacebook size={20} />,
+                    href: "https://web.facebook.com/mohammadalsamiul",
+                  },
                 ].map((social, i) => (
                   <motion.a
                     key={i}
@@ -152,40 +165,52 @@ export function Contact() {
               initial={{ opacity: 0, x: 20 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
-               className="p-8 md:p-10 rounded-[2.5rem] bg-background border border-border/50 shadow-xl relative"
+              className="p-8 md:p-10 rounded-[2.5rem] bg-background border border-border/50 shadow-xl relative"
             >
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="space-y-2">
-                  <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-1">Your Name</label>
+                  <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-1">
+                    Your Name
+                  </label>
                   <input
                     type="text"
                     required
                     value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, name: e.target.value })
+                    }
                     className="w-full px-6 py-4 rounded-2xl bg-muted/50 border border-border focus:border-primary/50 outline-none transition-all"
                     placeholder="John Doe"
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-1">Email Address</label>
+                  <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-1">
+                    Email Address
+                  </label>
                   <input
                     type="email"
                     required
                     value={formData.email}
-                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, email: e.target.value })
+                    }
                     className="w-full px-6 py-4 rounded-2xl bg-muted/50 border border-border focus:border-primary/50 outline-none transition-all"
                     placeholder="john@example.com"
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-1">Your Message</label>
+                  <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-1">
+                    Your Message
+                  </label>
                   <textarea
                     required
                     rows={5}
                     value={formData.message}
-                    onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, message: e.target.value })
+                    }
                     className="w-full px-6 py-4 rounded-2xl bg-muted/50 border border-border focus:border-primary/50 outline-none transition-all resize-none"
                     placeholder="How can I help you?"
                   />
@@ -198,7 +223,10 @@ export function Contact() {
                 >
                   {loading ? (
                     <>
-                      <AiOutlineLoading3Quarters className="animate-spin" size={18} />
+                      <AiOutlineLoading3Quarters
+                        className="animate-spin"
+                        size={18}
+                      />
                       Sending...
                     </>
                   ) : (

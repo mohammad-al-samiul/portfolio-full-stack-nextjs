@@ -3,6 +3,8 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
 import { SessionProviderWrapper } from "@/components/providers/SessionProviderWrapper";
+import { QueryProvider } from "@/components/providers/QueryProvider";
+import { GlobalLoader } from "@/components/ui/GlobalLoader";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { PageLoader } from "@/components/ui/PageLoader";
@@ -37,15 +39,18 @@ export default function RootLayout({
     >
       <body suppressHydrationWarning className="min-h-full flex flex-col">
         <SessionProviderWrapper>
-          <ThemeProvider>
-            <Suspense fallback={null}>
-              <PageLoader />
-            </Suspense>
-            <Toaster position="top-right" richColors />
-            <Navbar />
-            <main className="flex-1 pt-20">{children}</main>
-            <Footer />
-          </ThemeProvider>
+          <QueryProvider>
+            <GlobalLoader />
+            <ThemeProvider>
+              <Suspense fallback={null}>
+                <PageLoader />
+              </Suspense>
+              <Toaster position="top-right" richColors />
+              <Navbar />
+              <main className="flex-1 pt-20">{children}</main>
+              <Footer />
+            </ThemeProvider>
+          </QueryProvider>
         </SessionProviderWrapper>
       </body>
     </html>

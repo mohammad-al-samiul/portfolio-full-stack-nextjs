@@ -1,32 +1,43 @@
 "use client";
 
+import { useRef, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { format } from "date-fns";
-import { Calendar, Clock, ArrowRight, Layers } from "lucide-react";
+import { Calendar, Clock, ArrowRight, Layers, Share2 } from "lucide-react";
 import { cn } from "@/lib/utils";
-
-export interface Post {
-  id: string;
-  slug: string;
-  title: string;
-  excerpt: string;
-  content: string;
-  coverImage: string | null;
-  category: string;
-  tags: string[];
-  createdAt: Date;
-}
+import { Post } from "@/lib/types";
 
 interface BlogCardProps {
   post: Post;
   index: number;
+  onShare?: (post: Post) => void;
 }
 
-export function BlogCard({ post, index }: BlogCardProps) {
+export function BlogCard({ post, index, onShare }: BlogCardProps) {
+  const cardRef = useRef<HTMLDivElement>(null);
+  const [isHighlighted, setIsHighlighted] = useState(false);
+
+  const handleShare = () => {
+    if (cardRef.current) {
+      cardRef.current.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
+
+      // Trigger highlight animation
+      setIsHighlighted(true);
+      setTimeout(() => setIsHighlighted(false), 2000);
+
+      // Call the share handler
+      onShare?.(post);
+    }
+  };
+
   return (
     <motion.div
+      ref={cardRef}
       layout
       initial={{ opacity: 0, x: -30, scale: 0.95 }}
       whileInView={{ opacity: 1, x: 0, scale: 1 }}
@@ -37,7 +48,11 @@ export function BlogCard({ post, index }: BlogCardProps) {
         delay: index * 0.06,
       }}
       whileHover={{ y: -8 }}
-      className="group relative h-full"
+      animate={isHighlighted ? { scale: 1.05, boxShadow: "0 0 30px rgba(59, 130, 246, 0.5)" } : {}}
+      className={cn(
+        "group relative h-full transition-all duration-300",
+        isHighlighted && "ring-2 ring-blue-500/50"
+      )}
     >
        <Link href={`/blog/${post.slug}`} className="block h-full">
         <div className="relative h-full rounded-3xl overflow-hidden bg-card border border-border/50 shadow-xl flex flex-col">
@@ -59,6 +74,16 @@ export function BlogCard({ post, index }: BlogCardProps) {
               {post.category}
             </div>
             <div className="absolute inset-0 bg-linear-to-t from-black/60 to-transparent opacity-60 group-hover:opacity-40 transition-opacity" />
+            <button
+              onClick={(e) => {
+                e.preventDefault();
+                handleShare();
+              }}
+              className="absolute top-4 right-4 p-2 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 text-white hover:bg-white/20 transition-all opacity-0 group-hover:opacity-100"
+              title="Share Article"
+            >
+              <Share2 size={16} />
+            </button>
           </div>
 
           {/* Content */}

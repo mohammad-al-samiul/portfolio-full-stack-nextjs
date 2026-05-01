@@ -41,7 +41,7 @@ export function ProjectDetail({ project }: ProjectDetailProps) {
     visible: {
       opacity: 1,
       y: 0,
-      transition: { duration: 0.8, ease: [0.22, 1, 0.36, 1] as any },
+      transition: { duration: 0.8, ease: [0.22, 1, 0.36, 1] as never },
     },
   };
 
@@ -83,10 +83,10 @@ export function ProjectDetail({ project }: ProjectDetailProps) {
       >
         {/* Navigation */}
         <motion.div variants={itemVariants} className="mb-8 md:mb-16">
-             <Link
-              href="/#projects"
-              className="group inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-muted/50 border border-border text-muted-foreground hover:text-foreground hover:border-primary/50 transition-all duration-300"
-            >
+          <Link
+            href="/#projects"
+            className="group inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-muted/50 border border-border text-muted-foreground hover:text-foreground hover:border-primary/50 transition-all duration-300"
+          >
             <ArrowLeft
               size={18}
               className="group-hover:-translate-x-1 transition-transform"
@@ -133,14 +133,14 @@ export function ProjectDetail({ project }: ProjectDetailProps) {
                   </motion.a>
                 )}
                 {project.githubLink && (
-                 <motion.a
-                  href={project.githubLink}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  whileHover={{ scale: 1.03, y: -2 }}
-                  whileTap={{ scale: 0.97 }}
-                  className="group relative inline-flex items-center gap-2 px-8 py-4 rounded-2xl bg-white/5 border border-white/10 text-foreground font-bold uppercase tracking-widest text-xs hover:bg-white/10 hover:border-primary/30 transition-all duration-500"
-                >
+                  <motion.a
+                    href={project.githubLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    whileHover={{ scale: 1.03, y: -2 }}
+                    whileTap={{ scale: 0.97 }}
+                    className="group relative inline-flex items-center gap-2 px-8 py-4 rounded-2xl bg-white/5 border border-white/10 text-foreground font-bold uppercase tracking-widest text-xs hover:bg-white/10 hover:border-primary/30 transition-all duration-500"
+                  >
                     <GitBranch size={18} />
                     Source Code
                   </motion.a>
@@ -153,7 +153,7 @@ export function ProjectDetail({ project }: ProjectDetailProps) {
               variants={itemVariants}
               className="lg:col-span-5 relative"
             >
-               <div className="relative aspect-video lg:aspect-[16/10] w-full rounded-3xl overflow-hidden border border-border/50 shadow-2xl shadow-primary/20 group">
+              <div className="relative aspect-video lg:aspect-[16/10] w-full rounded-3xl overflow-hidden border border-border/50 shadow-2xl shadow-primary/20 group">
                 <div className="absolute bottom-0 left-0 right-0 h-1/3 bg-gradient-to-t from-black/40 to-transparent z-10" />
                 <Image
                   src={project.image}
@@ -262,7 +262,7 @@ export function ProjectDetail({ project }: ProjectDetailProps) {
 
           {/* Right: Sticky Sidebar */}
           <aside className="space-y-6">
-             <motion.div
+            <motion.div
               variants={itemVariants}
               className="p-6 rounded-3xl bg-card border border-border shadow-xl sticky top-24"
             >
@@ -277,7 +277,7 @@ export function ProjectDetail({ project }: ProjectDetailProps) {
                     initial={{ opacity: 0, scale: 0.8 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ delay: 0.5 + idx * 0.05 }}
-                     className="px-3 py-1.5 rounded-lg bg-white/5 border border-border text-sm font-medium text-foreground/90 hover:border-primary/50 hover:bg-primary/5 transition-all duration-300 cursor-default backdrop-blur-sm"
+                    className="px-3 py-1.5 rounded-lg bg-white/5 border border-border text-sm font-medium text-foreground/90 hover:border-primary/50 hover:bg-primary/5 transition-all duration-300 cursor-default backdrop-blur-sm"
                   >
                     {tech}
                   </motion.span>

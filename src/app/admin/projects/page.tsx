@@ -1,6 +1,5 @@
-import { auth } from "@/lib/auth";
-import { redirect } from "next/navigation";
-import { prisma } from "@/lib/prisma";
+"use client";
+
 import Link from "next/link";
 import {
   Plus,
@@ -12,18 +11,22 @@ import {
   EyeOff,
 } from "lucide-react";
 import { format } from "date-fns";
+import { useProjects } from "@/hooks/useProjects";
 import { DeleteProjectButton } from "@/components/admin/DeleteProjectButton";
 
-export default async function ProjectsDashboard() {
-  const session = await auth();
+export default function ProjectsDashboard() {
 
-  if (!session) {
-    redirect("/admin/login");
+  const { data: projects = [], error } = useProjects();
+
+  if (error) {
+    return (
+      <div className="p-8 max-w-7xl mx-auto bg-background">
+        <div className="text-center py-24">
+          <p className="text-destructive">Failed to load projects</p>
+        </div>
+      </div>
+    );
   }
-
-  const projects = await prisma.project.findMany({
-    orderBy: { createdAt: "desc" },
-  });
 
   return (
     <div className="p-8 max-w-7xl mx-auto bg-background">

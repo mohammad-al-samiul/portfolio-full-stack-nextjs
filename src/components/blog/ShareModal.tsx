@@ -3,7 +3,7 @@
 import { useState, useCallback, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Share2, Link, Check, X } from "lucide-react";
-import { FaFacebook, FaTwitter, FaLinkedin } from 'react-icons/fa';
+import { FaFacebook, FaTwitter, FaLinkedin } from "react-icons/fa";
 import { toast } from "sonner";
 
 interface ShareModalProps {
@@ -24,24 +24,22 @@ export function ShareModal({ isOpen, onClose, slug, title }: ShareModalProps) {
   // Prevent background scroll, handle ESC key, and focus management
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
+      if (e.key === "Escape") {
         onClose();
       }
     };
 
     if (isOpen) {
-      document.body.style.overflow = 'hidden';
-      document.addEventListener('keydown', handleKeyDown);
-      // Focus the modal for accessibility
+      document.body.style.overflow = "hidden";
+      document.addEventListener("keydown", handleKeyDown);
       setTimeout(() => modalRef.current?.focus(), 100);
     } else {
-      document.body.style.overflow = 'unset';
+      document.body.style.overflow = "unset";
     }
 
-    // Cleanup
     return () => {
-      document.body.style.overflow = 'unset';
-      document.removeEventListener('keydown', handleKeyDown);
+      document.body.style.overflow = "unset";
+      document.removeEventListener("keydown", handleKeyDown);
     };
   }, [isOpen, onClose]);
 
@@ -101,17 +99,17 @@ export function ShareModal({ isOpen, onClose, slug, title }: ShareModalProps) {
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.2 }}
-          className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center"
+          className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm"
           onClick={onClose}
         >
           {/* Modal */}
           <motion.div
             ref={modalRef}
-            initial={{ opacity: 0, scale: 0.95, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
             transition={{ duration: 0.2, ease: "easeOut" }}
-            className="w-full max-w-sm mx-4 rounded-2xl bg-card border border-border/50 shadow-2xl overflow-hidden"
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-sm mx-4 rounded-2xl bg-card border border-border/50 shadow-2xl overflow-hidden will-change-transform"
             onClick={(e) => e.stopPropagation()}
             tabIndex={-1}
           >
@@ -189,7 +187,9 @@ export function ShareModal({ isOpen, onClose, slug, title }: ShareModalProps) {
                     <div className="w-10 h-10 rounded-full bg-[#1DA1F2]/10 flex items-center justify-center group-hover:bg-[#1DA1F2]/20 transition-colors">
                       <FaTwitter size={18} className="text-[#1DA1F2]" />
                     </div>
-                    <span className="text-xs font-medium text-foreground">Twitter</span>
+                    <span className="text-xs font-medium text-foreground">
+                      Twitter
+                    </span>
                   </button>
 
                   <button
@@ -199,7 +199,9 @@ export function ShareModal({ isOpen, onClose, slug, title }: ShareModalProps) {
                     <div className="w-10 h-10 rounded-full bg-[#0A66C2]/10 flex items-center justify-center group-hover:bg-[#0A66C2]/20 transition-colors">
                       <FaLinkedin size={18} className="text-[#0A66C2]" />
                     </div>
-                    <span className="text-xs font-medium text-foreground">LinkedIn</span>
+                    <span className="text-xs font-medium text-foreground">
+                      LinkedIn
+                    </span>
                   </button>
 
                   <button
@@ -209,34 +211,41 @@ export function ShareModal({ isOpen, onClose, slug, title }: ShareModalProps) {
                     <div className="w-10 h-10 rounded-full bg-[#1877F2]/10 flex items-center justify-center group-hover:bg-[#1877F2]/20 transition-colors">
                       <FaFacebook size={18} className="text-[#1877F2]" />
                     </div>
-                    <span className="text-xs font-medium text-foreground">Facebook</span>
+                    <span className="text-xs font-medium text-foreground">
+                      Facebook
+                    </span>
                   </button>
                 </div>
               </div>
 
               {/* Native Share Button */}
-              {typeof window !== 'undefined' && typeof navigator.share === 'function' && (
-                <>
-                  <div className="h-px bg-border/50" />
-                  <button
-                    onClick={handleNativeShare}
-                    disabled={isSharing}
-                    className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-primary/10 border border-primary/20 text-primary font-medium hover:bg-primary/20 hover:border-primary/30 transition-all duration-200 disabled:opacity-50"
-                  >
-                    {isSharing ? (
-                      <motion.div
-                        animate={{ rotate: 360 }}
-                        transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                      >
+              {typeof window !== "undefined" &&
+                typeof navigator.share === "function" && (
+                  <>
+                    <div className="h-px bg-border/50" />
+                    <button
+                      onClick={handleNativeShare}
+                      disabled={isSharing}
+                      className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-primary/10 border border-primary/20 text-primary font-medium hover:bg-primary/20 hover:border-primary/30 transition-all duration-200 disabled:opacity-50"
+                    >
+                      {isSharing ? (
+                        <motion.div
+                          animate={{ rotate: 360 }}
+                          transition={{
+                            duration: 1,
+                            repeat: Infinity,
+                            ease: "linear",
+                          }}
+                        >
+                          <Share2 size={18} />
+                        </motion.div>
+                      ) : (
                         <Share2 size={18} />
-                      </motion.div>
-                    ) : (
-                      <Share2 size={18} />
-                    )}
-                    {isSharing ? "Sharing..." : "Share via System"}
-                  </button>
-                </>
-              )}
+                      )}
+                      {isSharing ? "Sharing..." : "Share via System"}
+                    </button>
+                  </>
+                )}
             </div>
           </motion.div>
         </motion.div>

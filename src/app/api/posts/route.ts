@@ -33,6 +33,7 @@ export async function POST(req: Request) {
     });
 
     revalidatePath("/blog");
+    revalidatePath(`/blog/${post.slug}`);
 
     return NextResponse.json(post);
   } catch (error) {

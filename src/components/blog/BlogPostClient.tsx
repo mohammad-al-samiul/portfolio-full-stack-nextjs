@@ -6,7 +6,7 @@ import Link from "next/link";
 import { format } from "date-fns";
 import { ArrowLeft, Calendar, Clock, Share2, Layers } from "lucide-react";
 import { MarkdownRenderer } from "@/components/ui/MarkdownRenderer";
-import { toast } from "sonner";
+
 import { ShareModal } from "./ShareModal";
 
 interface BlogPostClientProps {
@@ -48,8 +48,13 @@ export function BlogPostClient({ post }: BlogPostClientProps) {
             href="/blog"
             className="group inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-muted/50 border border-border text-muted-foreground hover:text-foreground hover:border-primary/50 transition-all duration-300"
           >
-            <ArrowLeft size={18} className="group-hover:-translate-x-1 transition-transform" />
-            <span className="text-sm font-bold uppercase tracking-widest">Back to Journal</span>
+            <ArrowLeft
+              size={18}
+              className="group-hover:-translate-x-1 transition-transform"
+            />
+            <span className="text-sm font-bold uppercase tracking-widest">
+              Back to Journal
+            </span>
           </Link>
         </div>
 
@@ -61,7 +66,7 @@ export function BlogPostClient({ post }: BlogPostClientProps) {
               {post.category}
             </span>
           </div>
-          
+
           <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-foreground mb-8 leading-tight">
             {post.title}
           </h1>
@@ -71,7 +76,9 @@ export function BlogPostClient({ post }: BlogPostClientProps) {
               <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold text-xs">
                 MS
               </div>
-              <span className="font-semibold text-foreground">Mohammad Al Samiul</span>
+              <span className="font-semibold text-foreground">
+                Mohammad Al Samiul
+              </span>
             </div>
             <div className="flex items-center gap-2">
               <Calendar size={16} />
@@ -81,17 +88,6 @@ export function BlogPostClient({ post }: BlogPostClientProps) {
               <Clock size={16} />
               {Math.ceil(post.content.length / 1000)} min read
             </div>
-          </div>
-
-          {/* Share Button */}
-          <div className="flex justify-end mt-6">
-            <button
-              onClick={() => setIsShareModalOpen(true)}
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-primary/10 border border-primary/20 text-primary font-bold uppercase tracking-widest text-[10px] hover:bg-primary/20 hover:border-primary/30 transition-all duration-300"
-            >
-              <Share2 size={16} />
-              Share Article
-            </button>
           </div>
         </header>
 
@@ -126,7 +122,7 @@ export function BlogPostClient({ post }: BlogPostClientProps) {
                 </span>
               ))}
             </div>
-            
+
             <div className="flex justify-end">
               <button
                 onClick={() => setIsShareModalOpen(true)}
@@ -144,7 +140,8 @@ export function BlogPostClient({ post }: BlogPostClientProps) {
                 Enjoyed the read?
               </h3>
               <p className="text-muted-foreground mb-8 max-w-md mx-auto">
-                I share my thoughts and learnings regularly. Subscribe to my newsletter to never miss an update.
+                I share my thoughts and learnings regularly. Subscribe to my
+                newsletter to never miss an update.
               </p>
               <div className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
                 <input

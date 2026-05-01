@@ -49,16 +49,19 @@ export function PostForm({ initialData }: PostFormProps) {
     content: (initialData?.content as string) || "",
     category: (initialData?.category as string) || "Frontend",
     coverImage: (initialData?.coverImage as string) || "",
-    tags: ((initialData?.tags as string[])?.join(", ")) || "",
+    tags: (initialData?.tags as string[])?.join(", ") || "",
     published: (initialData?.published as boolean) || false,
   });
 
-  const simpleMdeOptions = useMemo(() => ({
-    spellChecker: false,
-    autofocus: false,
-    placeholder: "Write your amazing content here...",
-    minHeight: "400px",
-  }), []);
+  const simpleMdeOptions = useMemo(
+    () => ({
+      spellChecker: false,
+      autofocus: false,
+      placeholder: "Write your amazing content here...",
+      maxHeight: "400px",
+    }),
+    [],
+  );
 
   const handleContentChange = useCallback((value: string) => {
     setFormData((prev) => ({

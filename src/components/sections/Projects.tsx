@@ -234,7 +234,7 @@ export function Projects() {
                 contributions.
               </p>
               <a
-                href="https://github.com/yourusername"
+                href="https://github.com/mohammad-al-samiul"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-foreground text-background font-bold uppercase tracking-widest text-xs hover:bg-primary hover:text-primary-foreground transition-all duration-500"

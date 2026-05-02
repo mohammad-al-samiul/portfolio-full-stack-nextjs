@@ -8,6 +8,7 @@ import { ArrowLeft, Calendar, Clock, Share2, Layers } from "lucide-react";
 import { MarkdownRenderer } from "@/components/ui/MarkdownRenderer";
 
 import { ShareModal } from "./ShareModal";
+import { NewsletterModal } from "@/components/layout/NewsletterModal";
 
 interface BlogPostClientProps {
   post: {
@@ -140,18 +141,19 @@ export function BlogPostClient({ post }: BlogPostClientProps) {
                 Enjoyed the read?
               </h3>
               <p className="text-muted-foreground mb-8 max-w-md mx-auto">
-                I share my thoughts and learnings regularly. Subscribe to my
-                newsletter to never miss an update.
+                Subscribe to get notified when I publish new articles.
               </p>
-              <div className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
-                <input
-                  type="email"
-                  placeholder="your@email.com"
-                  className="flex-1 px-6 py-4 rounded-xl bg-background/50 border border-border focus:border-primary/50 outline-none transition-all"
+              <div className="flex justify-center max-w-md mx-auto">
+                <NewsletterModal
+                  trigger={
+                    <button
+                      type="button"
+                      className="px-8 py-4 rounded-xl bg-primary text-primary-foreground font-bold uppercase tracking-widest text-xs hover:opacity-90 transition-opacity"
+                    >
+                      Subscribe
+                    </button>
+                  }
                 />
-                <button className="px-8 py-4 rounded-xl bg-primary text-primary-foreground font-bold uppercase tracking-widest text-xs">
-                  Join
-                </button>
               </div>
             </div>
           </div>

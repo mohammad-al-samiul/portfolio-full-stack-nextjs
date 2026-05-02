@@ -1,8 +1,10 @@
 import { NextResponse } from "next/server";
+import { after } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { z } from "zod";
 import { revalidatePath } from "next/cache";
+import { runNewPostEmailJob } from "@/lib/email/new-post-notification";
 
 const postSchema = z.object({
   title: z.string().min(1).optional(),
@@ -29,10 +31,27 @@ export async function PATCH(
     const json = await req.json();
     const body = postSchema.parse(json);
 
+    const previous = await prisma.post.findUnique({ where: { id } });
+    if (!previous) {
+      return NextResponse.json({ error: "Post not found" }, { status: 404 });
+    }
+
     const post = await prisma.post.update({
       where: { id },
       data: body,
     });
+
+    const becamePublished = post.published && !previous.published;
+    if (becamePublished) {
+      after(() => {
+        void runNewPostEmailJob({
+          id: post.id,
+          title: post.title,
+          slug: post.slug,
+          excerpt: post.excerpt,
+        });
+      });
+    }
 
     revalidatePath("/");
     revalidatePath("/blog");

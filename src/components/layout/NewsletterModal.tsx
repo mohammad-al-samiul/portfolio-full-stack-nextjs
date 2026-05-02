@@ -53,7 +53,7 @@ export function NewsletterModal({ trigger }: { trigger: React.ReactNode }) {
       <DialogTrigger asChild>
         {trigger}
       </DialogTrigger>
-      <DialogContent className="sm:max-width-[425px] overflow-hidden border-white/10 bg-background/95 backdrop-blur-2xl">
+      <DialogContent className="sm:max-w-[425px] overflow-hidden border-white/10 bg-background/95 backdrop-blur-2xl">
         <div className="absolute inset-0 bg-linear-to-br from-primary/10 via-transparent to-transparent pointer-events-none" />
         
         <DialogHeader className="relative">
@@ -64,7 +64,7 @@ export function NewsletterModal({ trigger }: { trigger: React.ReactNode }) {
             Stay in the loop
           </DialogTitle>
           <DialogDescription className="text-center text-muted-foreground pt-2">
-            Subscribe to my newsletter for the latest updates on web development, design systems, and tech experiments.
+            Subscribe to get notified when I publish new articles.
           </DialogDescription>
         </DialogHeader>
 

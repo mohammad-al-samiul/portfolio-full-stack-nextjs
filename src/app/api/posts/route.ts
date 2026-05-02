@@ -1,9 +1,11 @@
 import { NextResponse } from "next/server";
+import { after } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { z } from "zod";
 
 import { revalidatePath } from "next/cache";
+import { runNewPostEmailJob } from "@/lib/email/new-post-notification";
 
 const postSchema = z.object({
   title: z.string().min(1),
@@ -31,6 +33,17 @@ export async function POST(req: Request) {
         ...body,
       },
     });
+
+    if (post.published) {
+      after(() => {
+        void runNewPostEmailJob({
+          id: post.id,
+          title: post.title,
+          slug: post.slug,
+          excerpt: post.excerpt,
+        });
+      });
+    }
 
     revalidatePath("/");
     revalidatePath("/blog");

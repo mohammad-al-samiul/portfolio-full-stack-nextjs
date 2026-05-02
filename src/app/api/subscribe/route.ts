@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
+import { after } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { sendWelcomeEmail } from "@/lib/email/welcome-notification";
 
 export async function POST(req: Request) {
   try {
@@ -32,6 +34,13 @@ export async function POST(req: Request) {
 
     await prisma.newsletter.create({
       data: { email },
+    });
+
+    // Send welcome email asynchronously (does not block response)
+    console.log(`[SUBSCRIBE_API] Subscription created for ${email}, triggering welcome email`);
+    console.log(`[SUBSCRIBE_API] RESEND_API_KEY is ${process.env.RESEND_API_KEY ? 'set' : 'not set'}`);
+    void sendWelcomeEmail(email).then((success) => {
+      console.log(`[SUBSCRIBE_API] Welcome email send result for ${email}: ${success ? 'success' : 'failed'}`);
     });
 
     return NextResponse.json(

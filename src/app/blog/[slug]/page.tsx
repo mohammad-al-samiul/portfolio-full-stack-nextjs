@@ -1,4 +1,4 @@
-import { notFound, redirect } from "next/navigation";
+import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { BlogPostClient } from "@/components/blog/BlogPostClient";
 
@@ -83,7 +83,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
     post = await prisma.post.findUnique({
       where: { slug },
     });
-  } catch (error) {
+  } catch {
     console.warn("Database not connected, searching in fallback posts.");
   }
 

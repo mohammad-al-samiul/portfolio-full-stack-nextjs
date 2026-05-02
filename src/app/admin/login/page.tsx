@@ -7,7 +7,7 @@ import { motion } from "framer-motion";
 import { Layers, Lock, Mail, Loader2 } from "lucide-react";
 
 export default function LoginPage() {
-  const { data: session, status } = useSession();
+  const { status } = useSession();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -37,7 +37,7 @@ export default function LoginPage() {
       } else {
         router.push("/admin/dashboard");
       }
-    } catch (err) {
+    } catch {
       setError("An unexpected error occurred");
     } finally {
       setLoading(false);

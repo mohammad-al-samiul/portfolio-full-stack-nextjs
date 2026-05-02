@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { z } from "zod";
@@ -33,7 +34,6 @@ export async function POST(req: Request) {
     }
 
     const json = await req.json();
-    console.log("Incoming Project Data:", json);
 
     // Apply fallbacks before validation
     const dataToValidate = {
@@ -52,6 +52,9 @@ export async function POST(req: Request) {
       },
     });
 
+    revalidatePath("/");
+    revalidatePath(`/projects/${project.slug}`);
+
     return NextResponse.json(project);
   } catch (error) {
     console.error("[PROJECTS_POST]", error);
@@ -69,25 +72,32 @@ export async function POST(req: Request) {
   }
 }
 
-export async function GET() {
+export async function GET(req: Request) {
   try {
+    const session = await auth();
+    const adminList = new URL(req.url).searchParams.get("admin") === "1";
+
+    if (adminList && !session) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const projects = await prisma.project.findMany({
-      where: { published: true },
+      where: adminList && session ? {} : { published: true },
       orderBy: { createdAt: "desc" },
-    select: {
-      id: true,
-      slug: true,
-      title: true,
-      description: true,
-      techStack: true,
-      coverImage: true,
-      liveUrl: true,
-      githubUrl: true,
-      featured: true,
-      published: true,
-      createdAt: true,
-      updatedAt: true,
-    },
+      select: {
+        id: true,
+        slug: true,
+        title: true,
+        description: true,
+        techStack: true,
+        coverImage: true,
+        liveUrl: true,
+        githubUrl: true,
+        featured: true,
+        published: true,
+        createdAt: true,
+        updatedAt: true,
+      },
     });
 
     return NextResponse.json(projects);

@@ -2,15 +2,14 @@ import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
-import { 
-  FileText, 
-  Briefcase, 
-  Plus, 
-  BarChart3, 
-  ArrowUpRight, 
-  Users, 
-  Eye, 
-  MessageSquare 
+import {
+  FileText,
+  Briefcase,
+  Plus,
+  BarChart3,
+  ArrowUpRight,
+  Eye,
+  MessageSquare,
 } from "lucide-react";
 
 export default async function DashboardPage() {

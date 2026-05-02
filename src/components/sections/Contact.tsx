@@ -9,9 +9,8 @@ import {
   HiOutlinePaperAirplane,
 } from "react-icons/hi2";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
-import { FaGithub, FaLinkedinIn, FaTwitter } from "react-icons/fa6";
+import { FaGithub, FaLinkedinIn } from "react-icons/fa6";
 import { toast } from "sonner";
-import { cn } from "@/lib/utils";
 import { FaFacebook } from "react-icons/fa";
 
 export function Contact() {
@@ -27,7 +26,6 @@ export function Contact() {
     setLoading(true);
 
     try {
-      console.log("Submitting contact form:", formData);
       const res = await fetch("/api/contact", {
         method: "POST",
         body: JSON.stringify(formData),
@@ -35,8 +33,7 @@ export function Contact() {
       });
 
       if (res.ok) {
-        const data = await res.json();
-        console.log("Form submitted successfully:", data);
+        await res.json();
         toast.success("Message sent! I'll get back to you soon.");
         setFormData({ name: "", email: "", message: "" });
       } else {

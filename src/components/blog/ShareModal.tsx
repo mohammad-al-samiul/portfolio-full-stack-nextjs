@@ -49,7 +49,7 @@ export function ShareModal({ isOpen, onClose, slug, title }: ShareModalProps) {
       setIsCopied(true);
       toast.success("Link copied to clipboard!");
       setTimeout(() => setIsCopied(false), 2000);
-    } catch (error) {
+    } catch {
       toast.error("Failed to copy link");
     }
   }, [shareUrl]);

@@ -8,7 +8,6 @@ import {
   Users,
   TreePine,
   Layers,
-  Cloud,
   Sparkles,
   BrainCircuit,
   GitMerge,

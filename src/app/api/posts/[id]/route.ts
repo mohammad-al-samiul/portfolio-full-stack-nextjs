@@ -34,6 +34,7 @@ export async function PATCH(
       data: body,
     });
 
+    revalidatePath("/");
     revalidatePath("/blog");
     revalidatePath(`/blog/${post.slug}`);
 
@@ -75,6 +76,7 @@ export async function DELETE(
       where: { id },
     });
 
+    revalidatePath("/");
     revalidatePath("/blog");
     if (post) {
       revalidatePath(`/blog/${post.slug}`);

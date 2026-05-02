@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { z } from "zod";
@@ -35,6 +36,9 @@ export async function PATCH(
       data: body,
     });
 
+    revalidatePath("/");
+    revalidatePath(`/projects/${project.slug}`);
+
     return NextResponse.json(project);
   } catch (error) {
     console.error("[PROJECTS_PATCH]", error);
@@ -62,9 +66,20 @@ export async function DELETE(
     }
 
     const { id } = await params;
+
+    const existing = await prisma.project.findUnique({
+      where: { id },
+      select: { slug: true },
+    });
+
     await prisma.project.delete({
       where: { id },
     });
+
+    revalidatePath("/");
+    if (existing) {
+      revalidatePath(`/projects/${existing.slug}`);
+    }
 
     return new NextResponse(null, { status: 204 });
   } catch (error) {

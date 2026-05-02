@@ -3,7 +3,7 @@
 import { useRef, useState } from "react";
 import { motion, useInView } from "framer-motion";
 import { cn } from "@/lib/utils";
-import { Briefcase, Calendar, Sparkles, ArrowRight } from "lucide-react";
+import { Briefcase, Calendar, Sparkles } from "lucide-react";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 

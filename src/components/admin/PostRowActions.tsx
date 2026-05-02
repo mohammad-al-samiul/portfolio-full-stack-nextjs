@@ -16,8 +16,9 @@ export function PostRowActions({ postId, slug }: PostRowActionsProps) {
   const deletePost = useDeletePost();
 
   const handleDelete = async () => {
-    deletePost.mutate(postId);
-    setDialogOpen(false);
+    deletePost.mutate(postId, {
+      onSettled: () => setDialogOpen(false),
+    });
   };
 
   return (

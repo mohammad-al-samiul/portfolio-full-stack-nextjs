@@ -48,7 +48,7 @@ export async function POST(
       const recipient = ADMIN_EMAIL;
       
       try {
-        const { data, error } = await resend.emails.send({
+        const { error } = await resend.emails.send({
           from: "onboarding@resend.dev",
           to: recipient,
           subject: `[TRIAL MODE] Reply to ${originalMessage.name}`,

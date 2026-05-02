@@ -32,6 +32,7 @@ export async function POST(req: Request) {
       },
     });
 
+    revalidatePath("/");
     revalidatePath("/blog");
     revalidatePath(`/blog/${post.slug}`);
 
@@ -45,19 +46,28 @@ export async function POST(req: Request) {
   }
 }
 
-export async function GET() {
+export async function GET(req: Request) {
   try {
+    const session = await auth();
+    const adminList = new URL(req.url).searchParams.get("admin") === "1";
+
+    if (adminList && !session) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const posts = await prisma.post.findMany({
-      where: { published: true },
+      where: adminList && session ? {} : { published: true },
       orderBy: { createdAt: "desc" },
       select: {
         id: true,
         slug: true,
         title: true,
+        content: true,
         excerpt: true,
         coverImage: true,
         category: true,
         tags: true,
+        published: true,
         createdAt: true,
         updatedAt: true,
       },

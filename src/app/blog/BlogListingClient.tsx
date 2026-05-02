@@ -59,7 +59,7 @@ export function BlogListingClient() {
   const [activeCategory, setActiveCategory] = useState<Category>("All");
   const [shareModalOpen, setShareModalOpen] = useState(false);
   const [selectedPost, setSelectedPost] = useState<Post | null>(null);
-  const { data: posts = [], isLoading, error } = usePosts();
+  const { data: posts = [], isLoading, error } = usePosts("public");
 
   const handleShare = (post: Post) => {
     setSelectedPost(post);

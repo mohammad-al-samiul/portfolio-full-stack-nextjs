@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { FaGithub, FaTwitter, FaLinkedinIn, FaFacebook } from "react-icons/fa";
+import { FaGithub, FaLinkedinIn, FaFacebook } from "react-icons/fa";
 import { IoMailOutline } from "react-icons/io5";
 import { HiOutlineExternalLink } from "react-icons/hi";
 

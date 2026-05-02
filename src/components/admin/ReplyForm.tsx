@@ -43,8 +43,6 @@ export function ReplyForm({ messageId, existingReplies }: ReplyFormProps) {
 
       if (res.ok) {
         const data = await res.json();
-        console.log("Reply submitted. Email Status:", data.emailStatus);
-        
         if (data.emailStatus === "success") {
           toast.success("Reply sent and email delivered!");
         } else if (data.emailStatus === "sandbox_delivered") {
@@ -62,7 +60,7 @@ export function ReplyForm({ messageId, existingReplies }: ReplyFormProps) {
         const errorData = await res.json();
         toast.error(errorData.error || "Failed to send reply");
       }
-    } catch (error) {
+    } catch {
       toast.error("An error occurred");
     } finally {
       setLoading(false);

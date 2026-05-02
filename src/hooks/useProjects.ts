@@ -1,46 +1,47 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import {
+  useQuery,
+  useMutation,
+  useQueryClient,
+  type QueryClient,
+} from '@tanstack/react-query';
 import { projectService } from '@/services/project.service';
-import { Project, CreateProjectData, UpdateProjectData } from '@/lib/types';
+import type { Project, CreateProjectData, UpdateProjectData } from '@/lib/types';
+import { queryKeys } from '@/lib/query-keys';
 import { toast } from 'sonner';
 
-export const useProjects = () => {
-  return useQuery({
-    queryKey: ['projects'],
-    queryFn: projectService.getProjects,
-    staleTime: 5 * 60 * 1000, // 5 minutes
-  });
-};
+function getErrorMessage(error: unknown, fallback: string) {
+  return error instanceof Error ? error.message : fallback;
+}
 
-export const useProject = (slug: string) => {
-  return useQuery({
-    queryKey: ['project', slug],
-    queryFn: () => projectService.getProjectBySlug(slug),
-    enabled: !!slug,
-    staleTime: 5 * 60 * 1000,
-  });
-};
+async function invalidateAllProjectLists(queryClient: QueryClient) {
+  await queryClient.invalidateQueries({ queryKey: queryKeys.projects.root });
+}
 
-export const useProjectById = (id: string) => {
+/**
+ * @param scope `public` = published-only (homepage portfolio). `admin` = all projects (dashboard).
+ */
+export function useProjects(scope: 'public' | 'admin' = 'public') {
+  const isAdmin = scope === 'admin';
+
   return useQuery({
-    queryKey: ['project', 'id', id],
-    queryFn: () => projectService.getProjectById(id),
-    enabled: !!id,
-    staleTime: 5 * 60 * 1000,
+    queryKey: isAdmin ? queryKeys.projects.admin : queryKeys.projects.public,
+    queryFn: () =>
+      isAdmin ? projectService.getProjectsAdmin() : projectService.getProjects(),
+    staleTime: isAdmin ? 30 * 1000 : 60 * 1000,
   });
-};
+}
 
 export const useCreateProject = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: projectService.createProject,
-    onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ['projects'] });
+    onSuccess: async () => {
+      await invalidateAllProjectLists(queryClient);
       toast.success('Project created successfully!');
-      return data;
     },
-    onError: (error: any) => {
-      toast.error(error?.message || 'Failed to create project');
+    onError: (error: unknown) => {
+      toast.error(getErrorMessage(error, 'Failed to create project'));
     },
   });
 };
@@ -49,16 +50,19 @@ export const useUpdateProject = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ id, data }: { id: string; data: UpdateProjectData }) =>
-      projectService.updateProject(id, data),
-    onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ['projects'] });
-      queryClient.invalidateQueries({ queryKey: ['project', data.slug] });
+    mutationFn: ({
+      id,
+      data,
+    }: {
+      id: string;
+      data: UpdateProjectData;
+    }) => projectService.updateProject(id, data),
+    onSuccess: async () => {
+      await invalidateAllProjectLists(queryClient);
       toast.success('Project updated successfully!');
-      return data;
     },
-    onError: (error: any) => {
-      toast.error(error?.message || 'Failed to update project');
+    onError: (error: unknown) => {
+      toast.error(getErrorMessage(error, 'Failed to update project'));
     },
   });
 };
@@ -68,12 +72,39 @@ export const useDeleteProject = () => {
 
   return useMutation({
     mutationFn: projectService.deleteProject,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['projects'] });
+    onMutate: async (projectId: string) => {
+      await queryClient.cancelQueries({ queryKey: queryKeys.projects.root });
+
+      const prevPublic = queryClient.getQueryData<Project[]>(
+        queryKeys.projects.public,
+      );
+      const prevAdmin = queryClient.getQueryData<Project[]>(
+        queryKeys.projects.admin,
+      );
+
+      queryClient.setQueryData<Project[]>(queryKeys.projects.public, (old) =>
+        old ? old.filter((p) => p.id !== projectId) : [],
+      );
+      queryClient.setQueryData<Project[]>(queryKeys.projects.admin, (old) =>
+        old ? old.filter((p) => p.id !== projectId) : [],
+      );
+
+      return { prevPublic, prevAdmin };
+    },
+    onError: (error: unknown, _projectId, ctx) => {
+      if (ctx?.prevPublic !== undefined) {
+        queryClient.setQueryData(queryKeys.projects.public, ctx.prevPublic);
+      }
+      if (ctx?.prevAdmin !== undefined) {
+        queryClient.setQueryData(queryKeys.projects.admin, ctx.prevAdmin);
+      }
+      toast.error(getErrorMessage(error, 'Failed to delete project'));
+    },
+    onSuccess: async () => {
       toast.success('Project deleted successfully!');
     },
-    onError: (error: any) => {
-      toast.error(error?.message || 'Failed to delete project');
+    onSettled: async () => {
+      await invalidateAllProjectLists(queryClient);
     },
   });
 };

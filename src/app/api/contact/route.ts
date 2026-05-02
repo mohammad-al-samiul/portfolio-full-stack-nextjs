@@ -10,7 +10,7 @@ export async function POST(req: Request) {
     let body;
     try {
       body = await req.json();
-    } catch (parseError) {
+    } catch {
       return NextResponse.json({ error: "Invalid request payload" }, { status: 400 });
     }
 
@@ -31,8 +31,8 @@ export async function POST(req: Request) {
       contactMessage = await prisma.contactMessage.create({
         data: { name, email, message },
       });
-    } catch (dbError) {
-      return NextResponse.json({ 
+    } catch {
+      return NextResponse.json({
         error: "Database connection failed. Please try again later.",
       }, { status: 500 });
     }
@@ -63,8 +63,8 @@ export async function POST(req: Request) {
       id: contactMessage.id 
     }, { status: 200 });
 
-  } catch (error) {
-    return NextResponse.json({ 
+  } catch {
+    return NextResponse.json({
       error: "An unexpected server error occurred",
     }, { status: 500 });
   }

@@ -74,9 +74,7 @@ type ExtendedProject = Project & { category: Category };
 
 export function Projects() {
   const [activeCategory, setActiveCategory] = useState<Category>("All");
-  const { data: projects = [], isLoading, error } = useProjects();
-
-  console.log(projects);
+  const { data: projects = [], isLoading, error } = useProjects("public");
 
   const headingRef = useRef<HTMLDivElement>(null);
   const headingInView = useInView(headingRef, { once: true, margin: "-60px" });
@@ -106,7 +104,6 @@ export function Projects() {
     if (activeCategory === "All") return fetchedProjects;
     return fetchedProjects.filter((p) => p.category === activeCategory);
   }, [activeCategory, fetchedProjects]);
-  console.log({ filteredProjects });
 
   return (
     <section

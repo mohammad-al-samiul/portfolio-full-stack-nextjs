@@ -1,22 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import {
-  Plus,
-  Briefcase,
-  Edit,
-  ExternalLink,
-  Star,
-  Eye,
-  EyeOff,
-} from "lucide-react";
+import { Plus, Briefcase, Edit } from "lucide-react";
 import { format } from "date-fns";
 import { useProjects } from "@/hooks/useProjects";
 import { DeleteProjectButton } from "@/components/admin/DeleteProjectButton";
 
 export default function ProjectsDashboard() {
 
-  const { data: projects = [], error } = useProjects();
+  const { data: projects = [], error, isLoading } = useProjects("admin");
 
   if (error) {
     return (
@@ -24,6 +16,14 @@ export default function ProjectsDashboard() {
         <div className="text-center py-24">
           <p className="text-destructive">Failed to load projects</p>
         </div>
+      </div>
+    );
+  }
+
+  if (isLoading) {
+    return (
+      <div className="p-8 max-w-7xl mx-auto flex min-h-[40vh] items-center justify-center">
+        <p className="text-sm text-muted-foreground">Loading projects…</p>
       </div>
     );
   }

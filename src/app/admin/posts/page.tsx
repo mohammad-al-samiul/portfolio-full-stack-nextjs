@@ -7,7 +7,7 @@ import { usePosts } from "@/hooks/usePosts";
 import { PostRowActions } from "@/components/admin/PostRowActions";
 
 export default function AdminDashboard() {
-  const { data: posts = [], error } = usePosts();
+  const { data: posts = [], error, isLoading } = usePosts("admin");
 
   if (error) {
     return (
@@ -15,6 +15,14 @@ export default function AdminDashboard() {
         <div className="text-center py-24">
           <p className="text-destructive">Failed to load posts</p>
         </div>
+      </div>
+    );
+  }
+
+  if (isLoading) {
+    return (
+      <div className="p-6 md:p-10 max-w-7xl mx-auto flex min-h-[40vh] items-center justify-center">
+        <p className="text-sm text-muted-foreground">Loading posts…</p>
       </div>
     );
   }

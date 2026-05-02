@@ -41,7 +41,7 @@ export function NewsletterModal({ trigger }: { trigger: React.ReactNode }) {
       } else {
         toast.error(data.error || "Something went wrong");
       }
-    } catch (error) {
+    } catch {
       toast.error("Failed to connect to server");
     } finally {
       setIsLoading(false);

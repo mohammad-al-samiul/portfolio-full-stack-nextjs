@@ -28,39 +28,6 @@ export interface Project {
   updatedAt: Date;
 }
 
-export interface ContactMessage {
-  id: string;
-  name: string;
-  email: string;
-  message: string;
-  replies: Reply[];
-  createdAt: Date;
-}
-
-export interface Reply {
-  id: string;
-  content: string;
-  contactMessageId: string;
-  createdAt: Date;
-}
-
-export interface Newsletter {
-  id: string;
-  email: string;
-  createdAt: Date;
-}
-
-// API Response types
-export interface ApiResponse<T> {
-  data: T;
-  message?: string;
-}
-
-export interface ApiError {
-  message: string;
-  status: number;
-}
-
 // Form types
 export interface CreatePostData {
   title: string;
@@ -73,7 +40,7 @@ export interface CreatePostData {
   published: boolean;
 }
 
-export interface UpdatePostData extends Partial<CreatePostData> {}
+export type UpdatePostData = Partial<CreatePostData>;
 
 export interface CreateProjectData {
   title: string;
@@ -88,6 +55,9 @@ export interface CreateProjectData {
   published: boolean;
 }
 
-export interface UpdateProjectData extends Partial<CreateProjectData> {
-  id: string;
-}
+export type UpdateProjectData = Partial<
+  Omit<CreateProjectData, "slug" | "title">
+> & {
+  title?: string;
+  slug?: string;
+};

@@ -87,7 +87,6 @@ export function PostForm({ initialData }: PostFormProps) {
         {
           onSuccess: () => {
             router.push("/admin/posts");
-            router.refresh();
           },
         },
       );
@@ -95,7 +94,6 @@ export function PostForm({ initialData }: PostFormProps) {
       createPost.mutate(payload, {
         onSuccess: () => {
           router.push("/admin/posts");
-          router.refresh();
         },
       });
     }

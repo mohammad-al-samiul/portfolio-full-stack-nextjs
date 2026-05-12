@@ -14,7 +14,7 @@ interface ShareModalProps {
 }
 
 export function ShareModal({ isOpen, onClose, slug, title }: ShareModalProps) {
-  const BASE_URL = process.env.BASE_URL;
+  const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
   const shareUrl = `${BASE_URL}/blog/${slug}`;
 
   const [isCopied, setIsCopied] = useState(false);

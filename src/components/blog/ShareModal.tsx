@@ -14,7 +14,7 @@ interface ShareModalProps {
 }
 
 export function ShareModal({ isOpen, onClose, slug, title }: ShareModalProps) {
-  const BASE_URL = "https://portfolio-full-stack-nextjs.vercel.app";
+  const BASE_URL = process.env.BASE_URL;
   const shareUrl = `${BASE_URL}/blog/${slug}`;
 
   const [isCopied, setIsCopied] = useState(false);

@@ -23,7 +23,7 @@ export function Hero() {
           transition={{ type: "spring", stiffness: 260, damping: 20 }}
           className="mb-8"
         >
-           <div className="relative w-32 h-32 md:w-40 md:h-40 rounded-full border-4 border-primary/20 p-1 overflow-hidden bg-background">
+          <div className="relative w-32 h-32 md:w-40 md:h-40 rounded-full border-4 border-primary/20 p-1 overflow-hidden bg-background">
             <div className="w-full h-full rounded-full bg-muted flex items-center justify-center overflow-hidden relative">
               <Image
                 src="https://res.cloudinary.com/dt9bjjzrd/image/upload/v1777565997/samiul_bvwuq9.jpg"
@@ -47,7 +47,7 @@ export function Hero() {
             <span className="text-primary">Mohammad Al Samiul</span>
           </h1>
           <h2 className="text-2xl md:text-3xl font-medium text-muted-foreground">
-            Junior Software Engineer (Full Stack)
+            Software Engineer (Full Stack)
           </h2>
           <p className="max-w-150 mx-auto text-lg md:text-xl text-muted-foreground mt-4">
             Full-stack engineer specializing in scalable web applications using

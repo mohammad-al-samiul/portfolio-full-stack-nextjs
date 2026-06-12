@@ -1,0 +1,53 @@
+<svg width="680" height="400" viewBox="0 0 680 400" role="img" xmlns="http://www.w3.org/2000/svg">
+  <title>Al Samiul — Portfolio Logo</title>
+  <desc>Minimal geometric portfolio logo for Mohammad Al Samiul, software engineer, adaptive light and dark mode</desc>
+
+  <style>
+    :root {
+      --hex-stroke: #533ab7;
+      --hex-fill: rgba(83,58,183,0.08);
+      --bracket-left: #533ab7;
+      --bracket-right: #1D9E75;
+      --name-fill: #1a1a2e;
+      --line-color: #533ab7;
+      --tag-fill: #888780;
+      --mono-fill: #533ab7;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --hex-stroke: #9F8FEF;
+        --hex-fill: rgba(159,143,239,0.1);
+        --bracket-left: #9F8FEF;
+        --bracket-right: #5DCAA5;
+        --name-fill: #F1EFE8;
+        --line-color: #9F8FEF;
+        --tag-fill: #B4B2A9;
+        --mono-fill: #9F8FEF;
+      }
+    }
+  </style>
+
+  <!-- Hexagon mark -->
+  <g transform="translate(230,200)">
+    <polygon points="0,-72 62,-36 62,36 0,72 -62,36 -62,-36"
+      fill="none" stroke="var(--hex-stroke)" stroke-width="3.5"/>
+    <polygon points="0,-50 43,-25 43,25 0,50 -43,25 -43,-25"
+      fill="var(--hex-fill)"/>
+    <text x="-22" y="14" text-anchor="middle" font-family="monospace" font-size="36" font-weight="700" fill="var(--bracket-left)">&lt;</text>
+    <text x="26" y="14" text-anchor="middle" font-family="monospace" font-size="36" font-weight="700" fill="var(--bracket-right)">/&gt;</text>
+    <circle cx="0" cy="-56" r="5" fill="var(--hex-stroke)"/>
+    <circle cx="48" cy="-28" r="3" fill="var(--hex-stroke)" opacity="0.4"/>
+    <circle cx="-48" cy="-28" r="3" fill="var(--hex-stroke)" opacity="0.4"/>
+  </g>
+
+  <!-- Name wordmark -->
+  <text x="368" y="178" font-family="sans-serif" font-size="34" font-weight="500" fill="var(--name-fill)" letter-spacing="-1">Al Samiul</text>
+  <!-- Divider -->
+  <line x1="368" y1="193" x2="582" y2="193" stroke="var(--line-color)" stroke-width="2"/>
+  <circle cx="368" cy="193" r="3" fill="var(--line-color)"/>
+  <!-- Role -->
+  <text x="371" y="216" font-family="sans-serif" font-size="13" font-weight="400" fill="var(--tag-fill)" letter-spacing="3">SOFTWARE ENGINEER</text>
+  <!-- Stack -->
+  <text x="371" y="244" font-family="monospace" font-size="11" fill="var(--mono-fill)" opacity="0.65" letter-spacing="1">{ frontend · backend · fullstack }</text>
+
+</svg>

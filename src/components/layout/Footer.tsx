@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { FaGithub, FaLinkedinIn, FaFacebook } from "react-icons/fa";
 import { IoMailOutline } from "react-icons/io5";
 import { HiOutlineExternalLink } from "react-icons/hi";
+import Image from "next/image";
 
 export function Footer() {
   return (
@@ -18,13 +19,20 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
           {/* Brand */}
           <div className="md:col-span-2">
-            <Link href="/" className="flex items-center gap-2 mb-6 group">
-              <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-primary-foreground font-bold shadow-lg shadow-primary/20 group-hover:scale-110 transition-transform">
+            <Link href="/" className="flex items-center gap-2 group">
+              {/* <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-primary-foreground font-bold shadow-lg shadow-primary/20 group-hover:scale-110 transition-transform">
                 M
               </div>
               <span className="font-bold tracking-tight text-xl">
                 Al Samiul
-              </span>
+              </span> */}
+
+              <Image
+                src={"icon.svg"}
+                width={200}
+                height={28}
+                alt="Brand_Logo"
+              />
             </Link>
 
             <p className="text-muted-foreground max-w-sm leading-relaxed mb-8">

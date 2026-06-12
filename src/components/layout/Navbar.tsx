@@ -152,7 +152,7 @@ export function Navbar() {
           : "bg-transparent"
       }`}
     >
-      <div className="container mx-auto px-4 md:px-6 h-20 flex items-center justify-between">
+      <div className="container mx-auto px-0 sm:px-4 md:px-6 h-20 flex items-center justify-between">
         <Link
           href="/"
           onClick={(e) => {
@@ -232,26 +232,13 @@ export function Navbar() {
         <Sheet open={isOpen} onOpenChange={setIsOpen}>
           <SheetContent
             side="right"
+            showCloseButton={false}
             className="w-[85vw] p-0 bg-background/95 backdrop-blur-2xl border-l border-white/10"
           >
             <VisuallyHidden>
               <SheetTitle>Menu</SheetTitle>
             </VisuallyHidden>
             <div className="flex flex-col h-full">
-              <div className="p-6 border-b border-white/5 flex items-center justify-between">
-                <span className="font-bold text-lg uppercase tracking-widest text-muted-foreground/50">
-                  Navigation
-                </span>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => setIsOpen(false)}
-                  className="rounded-xl"
-                >
-                  <X className="w-5 h-5" />
-                </Button>
-              </div>
-
               <nav className="flex-1 p-6 space-y-2">
                 {navLinks.map((link) => {
                   const isActive = getIsActive(link);

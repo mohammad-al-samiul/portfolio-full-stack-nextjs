@@ -10,7 +10,6 @@ import { NewsletterModal } from "./NewsletterModal";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
-import Image from "next/image";
 
 const navLinks = [
   { name: "Home", href: "/#home", id: "home" },
@@ -167,13 +166,19 @@ export function Navbar() {
           }}
           className="group flex items-center gap-2 z-50"
         >
-          <Image src={"icon.svg"} width={200} height={200} alt="Brand_Logo" />
-          {/* <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg shadow-primary/20 group-hover:scale-110 transition-transform duration-300">
+          {/* <Image
+            src="icon.svg"
+            width={40}
+            height={40}
+            alt="Brand_Logo"
+            className="h-10 w-10 object-contain"
+          /> */}
+          <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg shadow-primary/20 group-hover:scale-110 transition-transform duration-300">
             M
           </div>
           <span className="text-xl font-bold tracking-tight bg-clip-text text-transparent bg-linear-to-r from-foreground to-foreground/70">
             Al Samiul
-          </span> */}
+          </span>
         </Link>
 
         {/* Desktop Navigation */}

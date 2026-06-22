@@ -1,5 +1,19 @@
 import { auth } from "@/lib/auth";
 import { Sidebar } from "@/components/admin/Sidebar";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Admin Dashboard | Mohammad Al Samiul",
+  description: "Admin dashboard for portfolio management",
+  robots: {
+    index: false,
+    follow: false,
+    googleBot: {
+      index: false,
+      follow: false,
+    },
+  },
+};
 
 export default async function AdminLayout({
   children,

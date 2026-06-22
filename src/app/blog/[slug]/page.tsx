@@ -1,14 +1,17 @@
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { BlogPostClient } from "@/components/blog/BlogPostClient";
+import type { Metadata } from "next";
 
 export const revalidate = 60;
+
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://samiul.vercel.app";
 
 interface BlogPostPageProps {
   params: Promise<{ slug: string }>;
 }
 
-export async function generateMetadata({ params }: BlogPostPageProps) {
+export async function generateMetadata({ params }: BlogPostPageProps): Promise<Metadata> {
   const { slug } = await params;
   const post = await prisma.post.findUnique({
     where: { slug },
@@ -18,11 +21,29 @@ export async function generateMetadata({ params }: BlogPostPageProps) {
 
   return {
     title: `${post.title} | Mohammad Al Samiul`,
-    description: post.excerpt,
+    description: post.excerpt || post.title,
+    keywords: [post.category, "Article", "Web Development", "Software Engineering"].concat(post.tags || []),
+    authors: [{ name: "Mohammad Al Samiul" }],
     openGraph: {
+      type: "article",
+      locale: "en_US",
+      url: `${siteUrl}/blog/${slug}`,
       title: post.title,
-      description: post.excerpt,
-      images: post.coverImage ? [{ url: post.coverImage }] : [],
+      description: post.excerpt || post.title,
+      publishedTime: post.createdAt?.toISOString(),
+      modifiedTime: post.updatedAt?.toISOString(),
+      authors: ["Mohammad Al Samiul"],
+      tags: post.tags || [],
+      images: post.coverImage ? [{ url: post.coverImage, width: 1200, height: 630, alt: post.title }] : [],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: post.title,
+      description: post.excerpt || post.title,
+      images: post.coverImage ? [post.coverImage] : [],
+    },
+    alternates: {
+      canonical: `${siteUrl}/blog/${slug}`,
     },
   };
 }
@@ -42,6 +63,7 @@ const dummyFallbackPosts = [
     coverImage:
       "https://images.unsplash.com/photo-1618477388954-7852f32655ec?q=80&w=2070&auto=format&fit=crop",
     createdAt: new Date(),
+    updatedAt: new Date(),
   },
   {
     id: "dummy-2",
@@ -57,6 +79,7 @@ const dummyFallbackPosts = [
     coverImage:
       "https://images.unsplash.com/photo-1544383835-bda2bc66a55d?q=80&w=2042&auto=format&fit=crop",
     createdAt: new Date(),
+    updatedAt: new Date(),
   },
   {
     id: "dummy-3",
@@ -72,6 +95,7 @@ const dummyFallbackPosts = [
     coverImage:
       "https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=2070&auto=format&fit=crop",
     createdAt: new Date(),
+    updatedAt: new Date(),
   },
 ];
 
@@ -96,5 +120,40 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
     notFound();
   }
 
-  return <BlogPostClient post={post} />;
+  // JSON-LD Structured Data for BlogPosting
+  const articleSchema = {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    headline: post.title,
+    description: post.excerpt || post.title,
+    image: post.coverImage || "https://res.cloudinary.com/dt9bjjzrd/image/upload/v1777565997/samiul_bvwuq9.jpg",
+    author: {
+      "@type": "Person",
+      name: "Mohammad Al Samiul",
+      url: siteUrl,
+      image: "https://res.cloudinary.com/dt9bjjzrd/image/upload/v1777565997/samiul_bvwuq9.jpg",
+    },
+    publisher: {
+      "@type": "Organization",
+      name: "Mohammad Al Samiul",
+      logo: {
+        "@type": "ImageObject",
+        url: "https://res.cloudinary.com/dt9bjjzrd/image/upload/v1777565997/samiul_bvwuq9.jpg",
+      },
+    },
+    datePublished: post.createdAt?.toISOString() || new Date().toISOString(),
+    dateModified: post.updatedAt?.toISOString() || new Date().toISOString(),
+    keywords: post.tags ? post.tags.join(", ") : "web development",
+    url: `${siteUrl}/blog/${slug}`,
+  };
+
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }}
+      />
+      <BlogPostClient post={post} />
+    </>
+  );
 }

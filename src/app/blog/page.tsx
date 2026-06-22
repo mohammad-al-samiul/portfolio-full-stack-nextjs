@@ -1,11 +1,51 @@
 import { Layers } from "lucide-react";
 import { BlogListingClient } from "@/app/blog/BlogListingClient";
+import type { Metadata } from "next";
 
 export const revalidate = 60;
 
-export const metadata = {
-  title: "Blog | Mohammad Al Samiul",
-  description: "Read my latest articles on web development, AI, and software engineering.",
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://samiul.vercel.app";
+
+export const metadata: Metadata = {
+  title: "Blog | Mohammad Al Samiul | Full-Stack Software Engineer",
+  description: "Read my latest articles on web development, Next.js, React, Node.js, JavaScript, TypeScript, and software engineering insights.",
+  keywords: [
+    "Blog",
+    "Web Development",
+    "Next.js",
+    "React",
+    "JavaScript",
+    "TypeScript",
+    "Software Engineering",
+    "Full-Stack Development",
+    "tutorials",
+    "programming",
+  ],
+  openGraph: {
+    type: "website",
+    locale: "en_US",
+    url: `${siteUrl}/blog`,
+    siteName: "Mohammad Al Samiul | Full-Stack Software Engineer",
+    title: "Blog | Mohammad Al Samiul",
+    description: "Read articles on web development, Next.js, React, and modern technologies.",
+    images: [
+      {
+        url: "https://res.cloudinary.com/dt9bjjzrd/image/upload/v1777565997/samiul_bvwuq9.jpg",
+        width: 1200,
+        height: 630,
+        alt: "Mohammad Al Samiul Blog",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Blog | Mohammad Al Samiul",
+    description: "Read my latest articles on web development and software engineering.",
+    images: ["https://res.cloudinary.com/dt9bjjzrd/image/upload/v1777565997/samiul_bvwuq9.jpg"],
+  },
+  alternates: {
+    canonical: `${siteUrl}/blog`,
+  },
 };
 
 export default function BlogPage() {
